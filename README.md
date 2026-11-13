@@ -52,25 +52,31 @@ forge install foundry-rs/forge-std
 forge test -vv         # 19 tests: leaked-ECDSA, replay, binding, guardian, fail-closed, fuzz
 ```
 
-Deploy (testnet `qorechain-diana`, EVM chain id 9800):
-
-```sh
-QVAULT_OWNER=0x… QVAULT_GUARDIAN=0x… \
-forge script script/DeployQVault.s.sol --rpc-url qore_testnet --broadcast --private-key $DEPLOYER_KEY
-```
-
-Withdraw (signs with ML-DSA-87 via `@qorechain/pqc`, relays via ethers):
+Testnet runbook (`qorechain-diana`, EVM chain id 9800):
 
 ```sh
 cd client && npm install
-VAULT=0x… RELAYER_KEY=0x… PQ_SECRET_FILE=./owner.pq TO=0x… AMOUNT=1000000000000000000 npm run withdraw
+npm run drill new                       # fresh eth-native account -> secrets/drill.mnemonic (gitignored)
+# fund the printed qor1 address from https://dashboard.qorechain.io/faucet
+npm run drill register                  # ML-DSA-87 key WITH proof of possession
+npm run drill status                    # must say: possession proven: true
+
+FUND_UQOR=5000000 npm run drill open-deploy   # unscoped window (deploy needs it) + 5 QOR budget to fund
+cd .. && QVAULT_OWNER=<evm address> forge script script/DeployQVault.s.sol \
+  --rpc-url qore_testnet --broadcast --private-key 0x$(cd client && npm run -s drill key 2>/dev/null)
+cast send <vault> --value 5ether --rpc-url qore_testnet --private-key 0x$(cd client && npm run -s drill key 2>/dev/null)
+cd client && npm run drill close        # no window left open: the ECDSA key alone can do nothing
+
+# during the drill: the one "normal transaction"
+npm run drill open-drill <vault>        # target = vault only, budget = fees of 2 txs
+npm run withdraw -- <vault> <to> 1000000000000000000
+npm run drill close
 ```
 
 ## Status
 
 - [x] Contract + tests against precompile mocks (real ABI from qorechain-core `docs/EVM_PRECOMPILES.md`)
-- [x] Withdraw client (`client/withdraw.ts`) — not yet run against testnet
-- [ ] Drill account setup script (PQ key registration with proof of possession, narrow EVM window)
+- [x] Withdraw client (`client/withdraw.ts`) and drill-account tool (`client/drill.ts`: key registration with proof of possession, deploy window, vault-only drill window, close) — not yet run against testnet
 - [ ] Testnet deployment + Q-Day Drill registration
 - [ ] Guardian agent: watches the vault and the owner account, freezes on anomaly
 - [ ] Timelock for withdrawals above a threshold, cancellable by guardian
@@ -80,6 +86,9 @@ VAULT=0x… RELAYER_KEY=0x… PQ_SECRET_FILE=./owner.pq TO=0x… AMOUNT=10000000
 
 - [`forge-std`](https://github.com/foundry-rs/forge-std) — Foundry test library (MIT/Apache-2.0)
 - [`@qorechain/pqc`](https://www.npmjs.com/package/@qorechain/pqc) — ML-DSA-87 signing (Apache-2.0)
+- [`@qorechain/sdk`](https://www.npmjs.com/package/@qorechain/sdk), [`@qorechain/evm`](https://www.npmjs.com/package/@qorechain/evm) — eth-native account, hybrid signing, EVM window (Apache-2.0)
+- `client/drill.ts` follows the window helper of [build-before-qday](https://github.com/qorechain/build-before-qday) workshop 1 (`scripts/window.ts`)
+- [`@cosmjs/stargate`](https://github.com/cosmos/cosmjs) — native-lane transport (Apache-2.0)
 - [`ethers`](https://github.com/ethers-io/ethers.js) — EVM client (MIT)
 - `IQorePQC` interface follows [qorechain-core](https://github.com/qorechain/qorechain-core) `contracts/interfaces/IQorePQC.sol` (Apache-2.0)
 

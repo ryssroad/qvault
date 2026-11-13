@@ -1,61 +1,58 @@
-// Sign a QVault withdrawal with the owner's ML-DSA-87 key and relay it.
+// Sign a QVault operation with the owner's ML-DSA-87 key and relay it on the EVM lane.
 //
-// The relayer can be ANY funded EVM account with an open EVM window that lists the vault —
-// it does not need to be the owner. The PQ signature, not msg.sender, authorises the withdrawal.
+//   npm run withdraw -- <vault> <to> <amount-wei> [token]     token omitted = native QOR
 //
-// env:
-//   RPC            default https://evm-testnet.qore.host
-//   VAULT          QVault address
-//   RELAYER_KEY    0x… secp256k1 key of the relaying account
-//   PQ_SECRET_FILE file with the owner's ML-DSA-87 secret key, hex (4896 bytes)
-//   TOKEN          0x0 for native QOR, else ERC-20 address
-//   TO             recipient
-//   AMOUNT         in base units (wei for native QOR on the EVM side)
-//   TTL            seconds until the signature expires, default 600
-//
-// Status: compiles against @qorechain/pqc 0.2.3 + ethers 6; not yet run against testnet.
+// The owner is the drill account (secrets/drill.mnemonic); its ML-DSA-87 key comes from the mnemonic.
+// The relayer defaults to the same account (needs a live window that lists the vault:
+// `npm run drill open-drill <vault>`); set RELAYER_KEY to relay from any other funded account.
+// The PQ signature — not msg.sender — authorises the withdrawal.
 
-import { readFileSync } from "node:fs";
 import { mldsa } from "@qorechain/pqc";
-import { Contract, JsonRpcProvider, Wallet, getBytes, hexlify } from "ethers";
+import { Contract, JsonRpcProvider, Wallet, getBytes, hexlify, isAddress } from "ethers";
+import { FEE_CAP_WEI, NET, account } from "./lib.js";
 
 const ABI = [
   "function owner() view returns (address)",
+  "function ownerNonce() view returns (uint256)",
   "function withdrawDigest(address token, address to, uint256 amount, uint256 deadline) view returns (bytes32)",
   "function withdraw(address token, address to, uint256 amount, uint256 deadline, bytes sig)",
 ];
-
-function env(name: string, fallback?: string): string {
-  const v = process.env[name] ?? fallback;
-  if (v === undefined || v === "") throw new Error(`missing env ${name}`);
-  return v;
-}
+const ZERO = "0x0000000000000000000000000000000000000000";
 
 async function main() {
-  const provider = new JsonRpcProvider(env("RPC", "https://evm-testnet.qore.host"));
-  const relayer = new Wallet(env("RELAYER_KEY"), provider);
-  const vault = new Contract(env("VAULT"), ABI, relayer);
+  const [vaultAddr, to, amountStr, token = ZERO] = process.argv.slice(2);
+  if (!isAddress(vaultAddr) || !isAddress(to) || !amountStr || !isAddress(token)) {
+    throw new Error("usage: npm run withdraw -- <vault> <to> <amount-wei> [token]");
+  }
+  const acc = await account();
+  const provider = new JsonRpcProvider(NET.evm);
+  const relayer = new Wallet(process.env.RELAYER_KEY ?? acc.privateKey, provider);
+  const vault = new Contract(vaultAddr, ABI, relayer);
 
-  const secretKey = getBytes("0x" + readFileSync(env("PQ_SECRET_FILE"), "utf8").trim().replace(/^0x/, ""));
-  const token = env("TOKEN", "0x0000000000000000000000000000000000000000");
-  const to = env("TO");
-  const amount = BigInt(env("AMOUNT"));
-  const deadline = BigInt(Math.floor(Date.now() / 1000) + Number(env("TTL", "600")));
+  const owner: string = await vault.owner();
+  if (owner.toLowerCase() !== acc.evm.toLowerCase()) throw new Error(`vault owner is ${owner}, not ${acc.evm}`);
 
-  // The vault computes the digest itself (domain, chain id, its address, nonce) — no re-implementation.
+  const amount = BigInt(amountStr);
+  const deadline = BigInt(Math.floor(Date.now() / 1000) + Number(process.env.TTL ?? "600"));
+  // The vault computes the digest itself (domain, chain id, its address, nonce): no re-implementation.
   const digest: string = await vault.withdrawDigest(token, to, amount, deadline);
-  const sig = mldsa.sign(secretKey, getBytes(digest)); // deterministic ML-DSA-87, 4627 bytes
-  console.log("owner   ", await vault.owner());
-  console.log("digest  ", digest);
-  console.log("sig len ", sig.length);
+  const sig = mldsa.sign(acc.pqc.secretKey, getBytes(digest)); // deterministic ML-DSA-87, 4,627 bytes
+  if (!mldsa.verify(acc.pqc.publicKey, getBytes(digest), sig)) throw new Error("local verify failed");
 
-  const tx = await vault.withdraw(token, to, amount, deadline, hexlify(sig));
-  console.log("tx      ", tx.hash);
+  console.log(`vault   ${vaultAddr}  nonce ${await vault.ownerNonce()}`);
+  console.log(`digest  ${digest}`);
+  // Fixed gas limit and fee cap: the window charges gasLimit x maxFeePerGas up front.
+  const tx = await vault.withdraw(token, to, amount, deadline, hexlify(sig), {
+    gasLimit: 600_000n,
+    maxFeePerGas: FEE_CAP_WEI,
+    maxPriorityFeePerGas: 1_000_000_000n,
+  });
+  console.log(`tx      ${tx.hash}`);
   const rcpt = await tx.wait();
-  console.log("status  ", rcpt?.status, "gas", rcpt?.gasUsed?.toString());
+  console.log(`status  ${rcpt?.status}  gas ${rcpt?.gasUsed}`);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
+main().catch((e: unknown) => {
+  console.error(e instanceof Error ? e.message : e);
+  process.exitCode = 1;
 });
