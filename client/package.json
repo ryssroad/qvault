@@ -1,0 +1,17 @@
+{
+  "name": "qvault-client",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "keygen": "tsx keygen.ts",
+    "withdraw": "tsx withdraw.ts"
+  },
+  "dependencies": {
+    "@qorechain/pqc": "^0.2.3",
+    "ethers": "^6.13.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
