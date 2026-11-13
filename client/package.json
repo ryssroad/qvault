@@ -6,6 +6,7 @@
   "scripts": {
     "drill": "tsx drill.ts",
     "withdraw": "tsx withdraw.ts",
+    "deploy": "tsx deploy.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

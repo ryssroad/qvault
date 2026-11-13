@@ -62,8 +62,9 @@ npm run drill register                  # ML-DSA-87 key WITH proof of possession
 npm run drill status                    # must say: possession proven: true
 
 FUND_UQOR=5000000 npm run drill open-deploy   # unscoped window (deploy needs it) + 5 QOR budget to fund
-cd .. && QVAULT_OWNER=<evm address> forge script script/DeployQVault.s.sol \
-  --rpc-url qore_testnet --broadcast --private-key 0x$(cd client && npm run -s drill key 2>/dev/null)
+# deploy with ethers (client/deploy.ts): forge script simulates without the 0x0A02 precompile, and
+# forge create misreads QoreChain receipts (missing field feePayer) and reports a successful deploy as failed.
+forge build && cd client && npm run deploy && cd ..
 cast send <vault> --value 5ether --rpc-url qore_testnet --private-key 0x$(cd client && npm run -s drill key 2>/dev/null)
 cd client && npm run drill close        # no window left open: the ECDSA key alone can do nothing
 
@@ -77,7 +78,8 @@ npm run drill close
 
 - [x] Contract + tests against precompile mocks (real ABI from qorechain-core `docs/EVM_PRECOMPILES.md`)
 - [x] Withdraw client (`client/withdraw.ts`) and drill-account tool (`client/drill.ts`: key registration with proof of possession, deploy window, vault-only drill window, close) — not yet run against testnet
-- [ ] Testnet deployment + Q-Day Drill registration
+- [x] Testnet deployment: QVault `0x5a7f65d0573be384f64351f30a616ed48dca3015`, funded, first ML-DSA-87-authorised withdrawal `status 1`
+- [ ] Q-Day Drill registration
 - [ ] Guardian agent: watches the vault and the owner account, freezes on anomaly
 - [ ] Timelock for withdrawals above a threshold, cancellable by guardian
 - [ ] Web UI
