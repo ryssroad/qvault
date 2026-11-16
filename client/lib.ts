@@ -3,7 +3,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { StargateClient } from "@cosmjs/stargate";
-import { EthNativeSigner, deriveUnifiedAccount, type UnifiedAccount } from "@qorechain/sdk";
+import { EthNativeSigner, deriveUnifiedAccount, openEvmWindowMsg, type UnifiedAccount } from "@qorechain/sdk";
+import { evmWindowCost, evmWindowStatus } from "@qorechain/evm";
 
 export const NET = {
   chainId: "qorechain-diana",
@@ -18,10 +19,18 @@ const FEE = { amount: [{ denom: "uqor", amount: "100000" }], gas: "800000" };
 /** EVM fee cap used to size windows; tools usually cap near 2x the ~100 gwei base fee. */
 export const FEE_CAP_WEI = 250_000_000_000n;
 
-export async function account(): Promise<UnifiedAccount> {
-  if (!existsSync(MNEMONIC_FILE)) throw new Error(`${MNEMONIC_FILE} not found — run: npm run drill new`);
-  return deriveUnifiedAccount(readFileSync(MNEMONIC_FILE, "utf8").trim(), 0);
+export async function accountFrom(file: string): Promise<UnifiedAccount> {
+  if (!existsSync(file)) throw new Error(`${file} not found — create it with: MNEMONIC_FILE=${file} npm run drill new`);
+  return deriveUnifiedAccount(readFileSync(file, "utf8").trim(), 0);
 }
+
+/** The drill / owner account (secrets/drill.mnemonic or MNEMONIC_FILE). */
+export async function account(): Promise<UnifiedAccount> {
+  return accountFrom(MNEMONIC_FILE);
+}
+
+/** EVM overrides sized for one vault call: the window charges gasLimit x maxFeePerGas up front. */
+export const TX = { gasLimit: 700_000n, maxFeePerGas: 250_000_000_000n, maxPriorityFeePerGas: 1_000_000_000n } as const;
 
 export async function accountSequence(address: string): Promise<{ accountNumber: bigint; sequence: bigint }> {
   const res = await fetch(`${NET.rest}/cosmos/auth/v1beta1/accounts/${address}`);
@@ -61,3 +70,22 @@ export async function broadcast(
   }
 }
 
+
+/**
+ * Make sure `acc` has a live EVM window that lists `vault` and has room for one more call at TX
+ * sizing; open a vault-only one (20 calls, max blocks) if not. Returns the open tx hash, if any.
+ */
+export async function ensureVaultWindow(acc: UnifiedAccount, vault: string): Promise<string | undefined> {
+  const need = evmWindowCost({ gas: TX.gasLimit, maxFeePerGas: TX.maxFeePerGas });
+  const ok = (w: Awaited<ReturnType<typeof evmWindowStatus>>) =>
+    w.found && w.live && w.remainingTxs >= 1n && w.remainingValue >= need &&
+    w.allowedTargets.some((t) => t.toLowerCase() === vault.toLowerCase());
+  if (ok(await evmWindowStatus({ rest: NET.rest, address: acc.cosmos }))) return undefined;
+  const msg = openEvmWindowMsg({ sender: acc.cosmos, blocks: 17280n, maxTxs: 20n, maxValue: need * 20n, allowedTargets: [vault] });
+  const hash = await broadcast(acc, "hybrid", [msg]);
+  for (let i = 0; i < 20; i++) {
+    await new Promise((r) => setTimeout(r, 1500));
+    if (ok(await evmWindowStatus({ rest: NET.rest, address: acc.cosmos }))) return hash;
+  }
+  throw new Error("window did not become live");
+}

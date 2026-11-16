@@ -1,0 +1,3 @@
+{"t":"2026-11-16T05:15:04.903Z","kind":"error","line":"read ECONNRESET"}
+{"t":"2026-11-16T11:15:02.550Z","kind":"error","line":"request timeout (code=TIMEOUT, version=6.17.0)"}
+{"t":"2026-11-16T12:13:00.673Z","kind":"error","line":"request timeout (code=TIMEOUT, version=6.17.0)"}

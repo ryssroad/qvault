@@ -5,3 +5,5 @@ node_modules/
 .env
 *.key
 secrets/
+client/guardian-policy.json
+video/

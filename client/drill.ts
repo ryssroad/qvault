@@ -98,9 +98,10 @@ async function cmdOpenDrill(vault: string | undefined): Promise<void> {
   if (!vault || !/^0x[0-9a-fA-F]{40}$/.test(vault)) throw new Error("usage: npm run drill open-drill <vault 0x…>");
   const acc = await account();
   const blocks = BigInt(process.env.DRILL_WINDOW_BLOCKS ?? "300"); // ~5 min: open, send, close
-  const maxTxs = 2n;
-  // Budget = fees for 2 withdrawals only. This is all an attacker holding the ECDSA key can burn.
-  const maxValue = evmWindowCost({ gas: 600_000n, maxFeePerGas: FEE_CAP_WEI }) * maxTxs;
+  const maxTxs = BigInt(process.env.DRILL_WINDOW_TXS ?? "2");
+  // Budget = fees of `maxTxs` vault calls only. This is all an attacker holding the ECDSA key can burn.
+  const gas = BigInt(process.env.DRILL_WINDOW_GAS ?? "600000");
+  const maxValue = evmWindowCost({ gas, maxFeePerGas: FEE_CAP_WEI }) * maxTxs;
   const msg = openEvmWindowMsg({ sender: acc.cosmos, blocks, maxTxs, maxValue, allowedTargets: [vault] });
   console.log(`opened: ${await broadcast(acc, "hybrid", [msg])}`);
   console.log(`window: ${blocks} blocks, ${maxTxs} txs, ${maxValue} uqor, target ${vault} only`);

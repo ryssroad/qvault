@@ -74,14 +74,52 @@ npm run withdraw -- <vault> <to> 1000000000000000000
 npm run drill close
 ```
 
+## v2 — timelock + guardian veto (`QVaultV2.sol`)
+
+v1 makes a leaked **ECDSA** key worthless. v2 also bounds a leaked **owner ML-DSA-87** key.
+
+- **Instant withdrawals** only within a per-token budget per 24 h (native QOR budget set at deploy; a token without a budget is queue-only).
+- **Everything else is timelocked** (`queue` → wait `delay` → anyone calls `execute`): larger withdrawals, owner / guardian / delay / budget changes, unfreeze. Stale after a 14-day grace period.
+- **Guardian** — a separate account with its own ML-DSA-87 key — can `guardianFreeze` and `cancel` any queued operation. It can never move funds or change authority.
+- **Only the guardian cancels** while one is set; otherwise a thief holding the owner key could cancel the owner's own rescue withdrawal.
+
+**Bound:** with an honest guardian, a thief holding the owner's PQ key gets at most one period's instant budget (`test_maxLossWithHonestGuardian_isOnePeriodBudget`).
+
+**Trade-off, stated plainly:** a malicious guardian can veto forever (it cannot steal). A guardian that is merely gone cannot block anything: unfreeze and its own removal go through the timelock and execute after `delay`.
+
+### Guardian agent (`client/guardian.ts`)
+
+Polls the vault every few seconds. Deny-by-default, because an owner signature alone proves nothing once the owner key may be stolen:
+
+- queued operation not approved in the local policy file → **cancel**;
+- queued withdrawal to an allowed recipient → pass;
+- instant withdrawal to an unknown recipient → **freeze**.
+
+The owner approves an exact operation out of band: `npm run v2 -- approval <op>` prints a hash for `guardian-policy.json`, which a thief with the owner key cannot write. The agent opens its own vault-only EVM window when it has to act. Decision logic is a pure function with unit tests (`guardian-policy.test.ts`).
+
+### Testnet run, 14 Nov 2026
+
+Vault `0x032d58891efDdBa939bC349Ebb32B8A37191DE0f`, delay 300 s, instant budget 2 QOR/24 h, funded with 20 QOR. The "thief" signs with the real owner key.
+
+| Step | Action | Guardian | Result |
+|---|---|---|---|
+| A | instant 1 QOR → owner | pass | paid |
+| B | thief queues 15 QOR → `0x…dEaD` | **CANCEL** (`0x22b3b395…`) | 7 s after queueing, incl. opening its window |
+| C | thief queues `setGuardian(0)` | **CANCEL** (`0x7a5bc9a5…`) | guardian stays |
+| D | owner queues 5 QOR → owner | pass | executed after 5 min |
+| E | thief instant 0.5 QOR → `0x…dEaD` | **FREEZE** (`0x292723ca…`) | the only loss: within budget |
+| F | owner queues unfreeze, pre-approved | pass | executed after 5 min |
+
+Final state: 13.5 QOR (20 − 1 − 5 − 0.5), not frozen, guardian unchanged. Log: `guardian-log/2026-11-14.jsonl`.
+
 ## Status
 
 - [x] Contract + tests against precompile mocks (real ABI from qorechain-core `docs/EVM_PRECOMPILES.md`)
 - [x] Withdraw client (`client/withdraw.ts`) and drill-account tool (`client/drill.ts`: key registration with proof of possession, deploy window, vault-only drill window, close) — run against testnet
 - [x] Testnet deployment: QVault `0x5a7f65d0573be384f64351f30a616ed48dca3015`, funded, first ML-DSA-87-authorised withdrawal `status 1`
-- [ ] Q-Day Drill registration
-- [ ] Guardian agent: watches the vault and the owner account, freezes on anomaly
-- [ ] Timelock for withdrawals above a threshold, cancellable by guardian
+- [x] Q-Day Drill registration (vault `0x5a7f…3015`); drill on 18 Nov — `client/watch.ts` records it to `drill-log/`
+- [x] Guardian agent: cancels unapproved queued operations, freezes on instant withdrawals to unknown recipients — run on testnet
+- [x] v2: instant budget + timelock, guardian veto — 21 Foundry tests, run on testnet
 - [ ] Web UI
 
 ## Credits

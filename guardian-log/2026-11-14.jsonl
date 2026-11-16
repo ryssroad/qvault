@@ -1,0 +1,9 @@
+{"t":"2026-11-14T15:47:28.774Z","kind":"start","line":"vault 0x032d58891efDdBa939bC349Ebb32B8A37191DE0f guardian 0x5a9aE0cfCE6107d8355B072b01253118259FF802 from block 10081621"}
+{"t":"2026-11-14T15:50:56.456Z","kind":"pass","line":"instant withdrawal to allowed recipient 0x85C146db8122834b859FA53B9EAC77fb16ba14F6","hash":"0x0dfb25cc5200aad7a123e95365844e6b40f9303d4517777dc0d203628c5d519d"}
+{"t":"2026-11-14T15:52:10.411Z","kind":"window","line":"opening vault-only window: E7AC86434C42F764A37B31AB0D1FBE88A839A93528CF90520B500FCA1334CA16"}
+{"t":"2026-11-14T15:52:17.409Z","kind":"CANCEL","line":"#0 Withdraw to unknown recipient 0x000000000000000000000000000000000000dEaD → 0x22b3b3955f4e52f54d88eead8afd0f216fcaecedd3653e1421f80a5d2001416b status 1","hash":"0x22b3b3955f4e52f54d88eead8afd0f216fcaecedd3653e1421f80a5d2001416b","status":1}
+{"t":"2026-11-14T15:53:33.116Z","kind":"CANCEL","line":"#1 SetGuardian: not approved → 0x7a5bc9a5487fe13533c28860ca2d656e9d913f8ab2a0a04c92000b54ed7a1968 status 1","hash":"0x7a5bc9a5487fe13533c28860ca2d656e9d913f8ab2a0a04c92000b54ed7a1968","status":1}
+{"t":"2026-11-14T15:54:34.709Z","kind":"pass","line":"#2 Withdraw to allowed recipient 0x85C146db8122834b859FA53B9EAC77fb16ba14F6"}
+{"t":"2026-11-14T16:04:25.746Z","kind":"FREEZE","line":"instant withdrawal of 500000000000000000 to unknown recipient 0x000000000000000000000000000000000000dEaD → 0x292723ca3204369a70a2a2cf6dfec93690a99e676ad739fd3d3b19a1df4e1c04 status 1","hash":"0x292723ca3204369a70a2a2cf6dfec93690a99e676ad739fd3d3b19a1df4e1c04","status":1}
+{"t":"2026-11-14T16:06:17.494Z","kind":"pass","line":"#3 Unfreeze: approved out of band"}
+{"t":"2026-11-14T16:52:47.167Z","kind":"start","line":"vault 0x032d58891efDdBa939bC349Ebb32B8A37191DE0f guardian 0x5a9aE0cfCE6107d8355B072b01253118259FF802 from block 10084371"}

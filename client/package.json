@@ -7,6 +7,11 @@
     "drill": "tsx drill.ts",
     "withdraw": "tsx withdraw.ts",
     "deploy": "tsx deploy.ts",
+    "watch": "tsx watch.ts",
+    "v2": "tsx v2.ts",
+    "guardian": "tsx guardian.ts",
+    "dashboard": "tsx server.ts",
+    "test": "tsx --test guardian-policy.test.ts abi.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
