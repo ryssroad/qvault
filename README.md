@@ -4,7 +4,7 @@
 
 **A vault that a leaked ECDSA key cannot drain.**
 
-**Demo:** [replay of the testnet runs](https://ryssroad.github.io/qvault/demo/): the Q-Day Drill and the v2 thief-vs-guardian scenario, replayed in the real dashboard from recorded sessions.
+**Video:** [2-minute walkthrough](https://youtu.be/u0O4q84Pm4o) · **Demo:** [replay of the testnet runs](https://ryssroad.github.io/qvault/demo/): the Q-Day Drill and the v2 thief-vs-guardian scenario, replayed in the real dashboard from recorded sessions.
 
 Built for [Build Before Q-Day](https://build.qorechain.io) — category **Post-Quantum dApp**, entered in the **Q-Day Drill**.
 
@@ -156,7 +156,7 @@ Final state: 13.5 QOR (20 − 1 − 5 − 0.5), not frozen, guardian unchanged. 
 - [x] Guardian agent: cancels unapproved queued operations, freezes on instant withdrawals to unknown recipients — run on testnet
 - [x] v2: instant budget + timelock, guardian veto — 21 Foundry tests, run on testnet
 - [x] Local dashboard with session recording (`client/server.ts`)
-- [ ] Demo video
+- [x] Demo video (https://youtu.be/u0O4q84Pm4o) and replay demo (https://ryssroad.github.io/qvault/demo/)
 
 ## Credits
 
