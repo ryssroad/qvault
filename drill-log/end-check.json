@@ -1,0 +1,16 @@
+{
+  "note": "Read-only chain check at drill start and at the last block before 2026-11-19T00:00:00Z. Archive queries via x-cosmos-block-height.",
+  "chain": "https://api-testnet.qore.host",
+  "account": "qor1g78rgs0v8u426saaasc0ge6klrx4gneph4gk3r",
+  "vault": "qor1tflkt5zh803cfajr28es5ctw6jxu5vq4e4xvel",
+  "checks": [
+    { "height": 10280762, "label": "start", "sequence": 14, "accountUqor": "20832502", "vaultUqor": "78000000" },
+    { "height": 10344546, "label": "end", "sequence": 17, "accountUqor": "21602202", "vaultUqor": "77000000" }
+  ],
+  "lastTxs": [
+    { "hash": "BB8BFFE0E5601503FB89AEA33CF9B522EF42A22E9259F7BD12ED806CE0025868", "height": 10298826, "time": "2026-11-18T05:52:42Z", "code": 0 },
+    { "hash": "EFF999A7056A4BAF3D5739CF3D8E29EA51FAF6D58815B143853F1FF737466394", "height": 10298825, "time": "2026-11-18T05:52:41Z", "code": 0 },
+    { "hash": "94F5B78903C71B59F8C56DB13062839062D2516B4F81D3525F1A7559DFAFB476", "height": 10298823, "time": "2026-11-18T05:52:38Z", "code": 0 }
+  ],
+  "result": "account sequence advanced by 3 (the owner's withdrawal at 05:52Z); no later transaction from the account"
+}

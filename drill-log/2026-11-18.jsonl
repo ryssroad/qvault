@@ -1,0 +1,10 @@
+{"t":"2026-11-18T05:52:43.057Z","kind":"state","block":"10298824","vaultQOR":"78.0","accountQOR":"20.732502499994931025","owner":"0x478E3441ec3f2Aad43bDec30F46756F8cD544f21","guardian":"0x0000000000000000000000000000000000000000","ownerNonce":"3","guardianNonce":"0","frozen":false,"window":{"live":true,"remainingTxs":"2","remainingUqor":"300000","targets":["0x5a7f65d0573be384f64351f30a616ed48dca3015"]}}
+{"t":"2026-11-18T05:52:43.059Z","kind":"ALERT","block":"10298824","alert":"EVM window opened"}
+{"t":"2026-11-18T05:52:46.508Z","kind":"tx","block":"10298825","hash":"0x5b80d646e64e67e2f18cfec4aa400bb8d42a2e557dfc03b7522ea5b9c8bac67a","from":"0x478e3441ec3f2aad43bdec30f46756f8cd544f21","to":"0x5a7f65d0573be384f64351f30a616ed48dca3015","value":"0","selector":"0x074540da","fn":"0x074540da","status":1,"gasUsed":"0x493e0"}
+{"t":"2026-11-18T05:52:46.973Z","kind":"event","block":"10298825","hash":"0x5b80d646e64e67e2f18cfec4aa400bb8d42a2e557dfc03b7522ea5b9c8bac67a","name":"Withdrawn","args":{"token":"0x0000000000000000000000000000000000000000","to":"0x478E3441ec3f2Aad43bDec30F46756F8cD544f21","amount":"1000000000000000000","nonce":"2"}}
+{"t":"2026-11-18T05:52:47.502Z","kind":"state","block":"10298827","vaultQOR":"77.0","accountQOR":"21.602202499994931025","owner":"0x478E3441ec3f2Aad43bDec30F46756F8cD544f21","guardian":"0x0000000000000000000000000000000000000000","ownerNonce":"3","guardianNonce":"0","frozen":false,"window":null}
+{"t":"2026-11-18T05:52:47.503Z","kind":"ALERT","block":"10298827","alert":"vault balance dropped 1.0 QOR"}
+{"t":"2026-11-18T11:17:59.797Z","kind":"error","error":"request timeout (code=TIMEOUT, version=6.17.0)"}
+{"t":"2026-11-18T16:50:51.992Z","kind":"error","error":"fetch failed"}
+{"t":"2026-11-18T17:21:05.234Z","kind":"error","error":"request timeout (code=TIMEOUT, version=6.17.0)"}
+{"t":"2026-11-18T20:44:49.388Z","kind":"error","error":"fetch failed"}
