@@ -30,6 +30,13 @@ const VAULT_ABI = [
   "function ownerNonce() view returns (uint256)",
   "function guardianNonce() view returns (uint256)",
   "function frozen() view returns (bool)",
+  // Mutating v1 functions, so the log names calls instead of printing selectors.
+  "function withdraw(address token, address to, uint256 amount, uint256 deadline, bytes sig)",
+  "function setOwner(address newOwner, uint256 deadline, bytes sig)",
+  "function setGuardian(address newGuardian, uint256 deadline, bytes sig)",
+  "function freeze(uint256 deadline, bytes sig)",
+  "function unfreeze(uint256 deadline, bytes sig)",
+  "function guardianFreeze(uint256 deadline, bytes sig)",
 ];
 const iface = new Interface(VAULT_ABI);
 const POLL_MS = Number(process.env.POLL_MS ?? "3000");

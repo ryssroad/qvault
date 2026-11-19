@@ -17,7 +17,7 @@ On Q-Day, every secp256k1 key on every chain becomes public. QoreChain already p
 | Owner's **public** ML-DSA key registered on their own account | Nothing: QVault requires `possessionProven`, so a copied public key does not pass. |
 | A valid owner signature seen in the mempool | Front-run the relay → same effect as the owner's intent: recipient, amount, token, nonce, deadline, chain id and vault address are all inside the signed digest. |
 | Guardian's ML-DSA-87 key | Freeze withdrawals. Nothing else (cannot withdraw, unfreeze or change authority). |
-| Owner's ML-DSA-87 key | Everything — the root of trust is the PQ key. Mitigation path: guardian freeze + timelocked large withdrawals (roadmap). |
+| Owner's ML-DSA-87 key | In v1, everything: the PQ key is the root of trust. v2 bounds it to one period's instant budget while an honest guardian is set; see the v2 section below. |
 
 Fail-closed: if the PQC precompiles are inactive (as on mainnet today), calls return empty data and every operation reverts.
 
@@ -44,6 +44,26 @@ Gas: one `pqcVerify` is ~85k inside the precompile; a withdrawal tx is ~0.3M gas
 2. Funds live in the vault; the drill account itself holds only fees.
 3. The EVM window used during the drill is opened with `--allowed-targets <QVault>` and a `max-value` equal to a small fee budget. That bounds the only loss the attacker can cause (fees).
 4. The required "normal transaction" during the drill is a PQ-signed withdrawal relayed through that window.
+
+### Drill result, 18 Nov 2026
+
+For the drill, the drill account's secp256k1 key was handed to the organizers. We checked the account and the vault on chain at fixed heights, at the start of the drill and at the last block before 2026-11-19 00:00 UTC:
+
+| | Drill start, block 10,280,762 | Drill end, block 10,344,546 |
+|---|---|---|
+| Vault `0x5a7f…3015` | 78 QOR | 77 QOR |
+| Drill account sequence | 14 | 17 |
+| Drill account balance | 20.83 QOR | 21.60 QOR |
+
+The account's sequence advanced by exactly 3, and all three transactions are ours, at 05:52 UTC:
+1. we open a vault-only EVM window;
+2. the **normal transaction**, a withdrawal of 1 QOR to the owner, authorised by an ML-DSA-87 signature (EVM `0x5b80d646e64e67e2f18cfec4aa400bb8d42a2e557dfc03b7522ea5b9c8bac67a`);
+3. we close the window.
+
+**No other transaction from the account was accepted, on either lane.** No value left the vault except through the owner's PQ-signed withdrawal, and the ERC-20 test tokens held by the account are untouched.
+
+- Watcher log: [`drill-log/2026-11-18.jsonl`](drill-log/2026-11-18.jsonl). The watcher writes a state line only when the state changes. Network errors leave no gaps, because its block cursor advances only after a successful pass.
+- Chain check: [`drill-log/end-check.json`](drill-log/end-check.json).
 
 ## Run
 
@@ -97,6 +117,19 @@ Polls the vault every few seconds. Deny-by-default, because an owner signature a
 
 The owner approves an exact operation out of band: `npm run v2 -- approval <op>` prints a hash for `guardian-policy.json`, which a thief with the owner key cannot write. The agent opens its own vault-only EVM window when it has to act. Decision logic is a pure function with unit tests (`guardian-policy.test.ts`).
 
+### Dashboard (`client/server.ts`)
+
+```sh
+cd client && V1_VAULT=0x5a7f65d0573be384f64351f30a616ed48dca3015 V2_VAULT=0x032d58891efDdBa939bC349Ebb32B8A37191DE0f npm run dashboard -- --record <name>   # http://127.0.0.1:8787
+```
+
+The dashboard is a local page that shows the live state of both vaults and the guardian's decisions. It has buttons for the owner's actions and for a "thief" holding the owner key:
+- instant and queued withdrawals, execute, funding;
+- a queued attempt to remove the guardian;
+- opening and closing EVM windows.
+
+The page binds only to 127.0.0.1, and POST requests need an `x-qvault: 1` header. With `--record`, every state change and action goes to `video/sessions/*.jsonl`. The demo video is rendered from those recordings.
+
 ### Testnet run, 14 Nov 2026
 
 Vault `0x032d58891efDdBa939bC349Ebb32B8A37191DE0f`, delay 300 s, instant budget 2 QOR/24 h, funded with 20 QOR. The "thief" signs with the real owner key.
@@ -117,10 +150,11 @@ Final state: 13.5 QOR (20 − 1 − 5 − 0.5), not frozen, guardian unchanged. 
 - [x] Contract + tests against precompile mocks (real ABI from qorechain-core `docs/EVM_PRECOMPILES.md`)
 - [x] Withdraw client (`client/withdraw.ts`) and drill-account tool (`client/drill.ts`: key registration with proof of possession, deploy window, vault-only drill window, close) — run against testnet
 - [x] Testnet deployment: QVault `0x5a7f65d0573be384f64351f30a616ed48dca3015`, funded, first ML-DSA-87-authorised withdrawal `status 1`
-- [x] Q-Day Drill registration (vault `0x5a7f…3015`); drill on 18 Nov — `client/watch.ts` records it to `drill-log/`
+- [x] Q-Day Drill, 18 Nov: no attacker transaction accepted; the normal transaction was a PQ-signed withdrawal (see *Drill result*)
 - [x] Guardian agent: cancels unapproved queued operations, freezes on instant withdrawals to unknown recipients — run on testnet
 - [x] v2: instant budget + timelock, guardian veto — 21 Foundry tests, run on testnet
-- [ ] Web UI
+- [x] Local dashboard with session recording (`client/server.ts`)
+- [ ] Demo video
 
 ## Credits
 
@@ -132,7 +166,7 @@ Final state: 13.5 QOR (20 − 1 − 5 − 0.5), not frozen, guardian unchanged. 
 - [`ethers`](https://github.com/ethers-io/ethers.js) — EVM client (MIT)
 - `IQorePQC` interface follows [qorechain-core](https://github.com/qorechain/qorechain-core) `contracts/interfaces/IQorePQC.sol` (Apache-2.0)
 
-Built with AI coding assistants; see `AI_USAGE.md` (to be added).
+Built with AI coding assistants; see [`AI_USAGE.md`](AI_USAGE.md).
 
 ## License
 
