@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QVault — dashboard</title>
+<style>
+  :root {
+    --bg: #090a14; --panel: #10121f; --panel2: #151829; --line: #23263c; --text: #e9eaf7; --dim: #8a8db0; --faint: #5b5e80;
+    --violet: #8b5cf6; --cyan: #2de2c9; --red: #ff5c7a; --amber: #ffb547; --green: #3ddc97;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; }
+  header { display: flex; align-items: center; gap: 18px; padding: 18px 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(9,10,20,.92); backdrop-filter: blur(8px); z-index: 5; }
+  header h1 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
+  header .tag { color: var(--dim); font-size: 13px; }
+  .grad { height: 3px; background: linear-gradient(90deg, var(--violet), var(--cyan)); }
+  .net { margin-left: auto; font: 12px var(--mono); color: var(--dim); display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .rec { margin-left: auto; display: flex; align-items: center; gap: 8px; font: 600 12px var(--mono); color: var(--red); }
+  .rec[hidden] { display: none; }
+  .rec + .net { margin-left: 14px; }
+  .recdot { width: 9px; height: 9px; border-radius: 50%; background: var(--red); animation: blink 1.2s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .25; } }
+  .rec button { padding: 4px 9px; font-size: 11.5px; }
+  .dot.off { background: var(--red); box-shadow: 0 0 8px var(--red); }
+  main { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; padding: 22px 28px 40px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; min-width: 0; }
+  section h2 { margin: 0 0 4px; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+  section .sub { color: var(--dim); font-size: 12.5px; margin-bottom: 14px; }
+  .span2 { grid-column: 1 / -1; }
+  .badge { font: 600 11px var(--mono); padding: 3px 8px; border-radius: 999px; letter-spacing: .04em; }
+  .b-ok { background: rgba(61,220,151,.12); color: var(--green); }
+  .b-frozen { background: rgba(255,181,71,.14); color: var(--amber); }
+  .b-v { background: rgba(139,92,246,.16); color: #b9a0ff; }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 14px; }
+  .stat { background: var(--panel2); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+  .stat .k { color: var(--faint); font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; }
+  .stat .v { font-size: 20px; font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat .v small { font-size: 12px; color: var(--dim); font-weight: 500; }
+  .bar { height: 6px; background: #1e2136; border-radius: 3px; overflow: hidden; margin-top: 8px; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--violet), var(--cyan)); transition: width .4s; }
+  .kv { display: grid; grid-template-columns: 92px 1fr; gap: 4px 10px; font-size: 12.5px; margin-bottom: 14px; }
+  .kv .k { color: var(--faint); }
+  .addr { font-family: var(--mono); font-size: 12px; color: var(--dim); overflow-wrap: anywhere; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .group { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .group.thief { border-color: rgba(255,92,122,.35); background: linear-gradient(180deg, rgba(255,92,122,.06), transparent 70%); }
+  .group h3 { margin: 0 0 3px; font-size: 13px; }
+  .group p { margin: 0 0 10px; font-size: 12px; color: var(--dim); }
+  .row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  input { background: var(--bg); border: 1px solid var(--line); color: var(--text); border-radius: 8px; padding: 7px 9px; font: 13px var(--mono); width: 90px; }
+  button { background: var(--panel2); color: var(--text); border: 1px solid #2c3050; border-radius: 8px; padding: 7px 11px; font: 500 12.5px inherit; font-family: inherit; cursor: pointer; transition: border-color .15s, background .15s; }
+  button:hover:not(:disabled) { border-color: var(--violet); background: #1b1e33; }
+  button.primary { background: linear-gradient(90deg, #6d45e6, #2bb8a7); border: 0; }
+  button.danger { border-color: rgba(255,92,122,.5); color: #ffb3c1; }
+  button.danger:hover:not(:disabled) { border-color: var(--red); background: rgba(255,92,122,.1); }
+  button:disabled { opacity: .45; cursor: wait; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th { text-align: left; color: var(--faint); font-weight: 500; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; padding: 0 8px 6px 0; }
+  td { padding: 7px 8px 7px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  td.mono, .mono { font-family: var(--mono); font-size: 12px; }
+  .empty { color: var(--faint); font-size: 12.5px; padding: 6px 0; }
+  .feed { max-height: 360px; overflow: auto; font: 12px var(--mono); }
+  .feed .it { display: grid; grid-template-columns: 62px 70px 1fr; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .feed .it:first-child { border-top: 0; }
+  .feed .t { color: var(--faint); }
+  .kind { font-weight: 700; }
+  .k-CANCEL, .k-FREEZE, .k-ALERT, .k-error, .k-fail { color: var(--red); }
+  .k-pass, .k-ok { color: var(--green); }
+  .k-window, .k-start, .k-state { color: #8fb4ff; }
+  .k-tx, .k-event { color: var(--cyan); }
+  .k-dry-run, .k-warn { color: var(--amber); }
+  .msg { color: #c9cbe4; overflow-wrap: anywhere; }
+  .flash { animation: flash 1.6s ease-out; }
+  @keyframes flash { from { background: rgba(139,92,246,.22); } to { background: transparent; } }
+  #toast { position: fixed; right: 22px; bottom: 22px; max-width: 520px; background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--violet); border-radius: 10px; padding: 12px 14px; font-size: 13px; box-shadow: 0 10px 40px rgba(0,0,0,.5); opacity: 0; transform: translateY(8px); transition: .25s; pointer-events: none; }
+  #toast.show { opacity: 1; transform: none; }
+  #toast.err { border-left-color: var(--red); }
+  #toast.ok { border-left-color: var(--green); }
+  .spin { display: inline-block; width: 11px; height: 11px; border: 2px solid var(--dim); border-top-color: transparent; border-radius: 50%; animation: s .8s linear infinite; vertical-align: -1px; margin-right: 6px; }
+  @keyframes s { to { transform: rotate(360deg); } }
+  .note { font-size: 12px; color: var(--dim); margin-top: 10px; }
+  @media (max-width: 1100px) { main { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } .actions { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>QVault</h1>
+  <span class="tag">A vault a leaked key cannot drain · ML-DSA-87 on QoreChain</span>
+  <div id="rec" class="rec" hidden><span class="recdot"></span><span id="rectime">REC</span><button id="markbtn" title="Add a scene mark to the recording">Mark scene</button></div>
+  <div class="net"><span class="dot" id="dot"></span><span id="net">connecting…</span></div>
+</header>
+<div class="grad"></div>
+
+<main>
+  <!-- v2 -->
+  <section id="v2">
+    <h2>QVault v2 <span class="badge b-v">timelock + guardian</span> <span id="v2frozen"></span></h2>
+    <div class="sub">Bounds a leaked <b>owner ML-DSA-87</b> key: instant withdrawals only within a daily budget, everything else waits out the delay, and the guardian can veto.</div>
+    <div class="stats">
+      <div class="stat"><div class="k">Balance</div><div class="v" id="v2bal">–</div></div>
+      <div class="stat"><div class="k">Instant left / 24h</div><div class="v" id="v2rem">–</div><div class="bar"><i id="v2barfill" style="width:0"></i></div></div>
+      <div class="stat"><div class="k">Delay</div><div class="v" id="v2delay">–</div></div>
+      <div class="stat"><div class="k">Queued</div><div class="v" id="v2q">–</div></div>
+    </div>
+    <div class="kv">
+      <span class="k">vault</span><span class="addr" id="v2addr"></span>
+      <span class="k">owner</span><span class="addr" id="v2owner"></span>
+      <span class="k">guardian</span><span class="addr" id="v2guard"></span>
+      <span class="k">owner window</span><span class="addr" id="v2win"></span>
+    </div>
+    <div class="row" style="margin-bottom:14px">
+      <button data-a="v2-open-window">Open owner window</button>
+      <button data-a="v2-close-window">Close owner window</button>
+      <span style="align-self:center;color:var(--dim);font-size:12px">Opened with a hybrid (secp256k1 + ML-DSA-87) signature, scoped to this vault. Closed = the classical key can send nothing.</span>
+    </div>
+    <div class="actions">
+      <div class="group">
+        <h3>Owner</h3>
+        <p>Signed with the owner's ML-DSA-87 key by the local signer.</p>
+        <div class="row"><input id="amt" value="1" aria-label="amount in QOR"><span class="mono" style="align-self:center;color:var(--dim)">QOR → owner</span></div>
+        <div class="row">
+          <button class="primary" data-a="v2-withdraw">Instant withdraw</button>
+          <button data-a="v2-queue-withdraw">Queue withdraw</button>
+        </div>
+        <div class="row">
+          <button data-a="v2-approve-unfreeze">Approve &amp; queue unfreeze</button>
+          <button data-a="v2-fund">Fund vault</button>
+        </div>
+      </div>
+      <div class="group thief">
+        <h3>Thief · stolen owner key</h3>
+        <p>Same owner key, real signatures — sending to <span class="mono">0x…dEaD</span>, which the guardian does not know.</p>
+        <div class="row"><button class="danger" data-a="thief-withdraw" data-amount="0.5">Instant 0.5 QOR → dEaD</button></div>
+        <div class="row"><button class="danger" data-a="thief-queue-withdraw" data-amount="10">Queue 10 QOR → dEaD</button></div>
+        <div class="row"><button class="danger" data-a="thief-remove-guardian">Queue: remove guardian</button></div>
+      </div>
+    </div>
+    <h2 style="margin-top:18px">Timelock queue</h2>
+    <div class="sub">Anyone can execute an operation once its delay has passed. The guardian can cancel it before.</div>
+    <table><thead><tr><th>#</th><th>operation</th><th>details</th><th>ready in</th><th></th></tr></thead><tbody id="queue"></tbody></table>
+  </section>
+
+  <!-- guardian -->
+  <section>
+    <h2>Guardian agent <span class="badge b-ok" id="gstat">independent process</span></h2>
+    <div class="sub">Its own account and ML-DSA-87 key. Deny-by-default: cancels unapproved queued operations, freezes on instant withdrawals to unknown recipients. Feed from <span class="mono">guardian-log/</span>.</div>
+    <div class="feed" id="gfeed"></div>
+  </section>
+
+  <!-- v1 -->
+  <section>
+    <h2>QVault v1 <span class="badge b-v">Q-Day Drill</span></h2>
+    <div class="sub">Bounds a leaked <b>ECDSA</b> key: every value move needs the owner's ML-DSA-87 signature; <span class="mono">msg.sender</span> grants nothing.</div>
+    <div class="stats" style="grid-template-columns: repeat(3, minmax(0,1fr))">
+      <div class="stat"><div class="k">Balance</div><div class="v" id="v1bal">–</div></div>
+      <div class="stat"><div class="k">Owner nonce</div><div class="v" id="v1nonce">–</div></div>
+      <div class="stat"><div class="k">Drill account</div><div class="v" id="v1acc">–</div></div>
+    </div>
+    <div class="kv">
+      <span class="k">vault</span><span class="addr" id="v1addr"></span>
+      <span class="k">owner</span><span class="addr" id="v1owner"></span>
+      <span class="k">window</span><span class="addr" id="v1win"></span>
+    </div>
+    <div class="row">
+      <button class="primary" data-a="v1-normal-tx" data-amount="1">Drill "normal transaction"</button>
+    </div>
+    <div class="note">Opens a window scoped to the vault, makes one PQ-signed withdrawal of 1 QOR to the owner, closes the window.</div>
+  </section>
+
+  <section>
+    <h2>Drill watch</h2>
+    <div class="sub">Everything the chain accepted from the drill account or into v1, from <span class="mono">drill-log/</span>.</div>
+    <div class="feed" id="dfeed"></div>
+  </section>
+
+  <!-- events + actions -->
+  <section>
+    <h2>On-chain events</h2>
+    <div class="sub">Both vaults, newest first.</div>
+    <div class="feed" id="events"></div>
+  </section>
+  <section>
+    <h2>Signer actions</h2>
+    <div class="sub">What this dashboard asked the local signer to do.</div>
+    <div class="feed" id="acts"></div>
+  </section>
+</main>
+<div id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const short = (a) => a ? a.slice(0, 8) + "…" + a.slice(-6) : "–";
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = (x) => { const n = Number(x); return Number.isFinite(n) ? (Math.round(n * 1000) / 1000).toString() : "–"; };
+const hhmmss = (t) => (typeof t === "string" ? t.slice(11, 19) : t ? new Date(t * 1000).toISOString().slice(11, 19) : "");
+const dur = (s) => s <= 0 ? "ready" : s >= 3600 ? `${Math.floor(s / 3600)}h ${Math.floor(s % 3600 / 60)}m` : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+let last = null, running = false, seen = new Set();
+
+function win(w) {
+  if (!w) return "–";
+  return w.live ? `LIVE · ${w.remainingTxs} txs · ${fmt(w.remainingQOR)} QOR budget · targets ${w.targets?.length ? w.targets.map(short).join(", ") : "ANY"}` : "closed — the ECDSA key alone can do nothing";
+}
+
+function feed(el, items, map) {
+  if (!items.length) { el.innerHTML = '<div class="empty">nothing yet</div>'; return; }
+  el.innerHTML = items.map((x) => {
+    const [t, kind, msg, key] = map(x);
+    const fresh = key && !seen.has(key); if (key) seen.add(key);
+    return `<div class="it${fresh && last ? " flash" : ""}"><span class="t">${esc(t)}</span><span class="kind k-${esc(kind)}">${esc(kind)}</span><span class="msg">${esc(msg)}</span></div>`;
+  }).join("");
+}
+
+function render(s) {
+  $("dot").className = "dot"; $("net").textContent = `qorechain-diana · block ${s.head.toLocaleString("en")}`;
+  const v2 = s.v2;
+  $("v2bal").innerHTML = `${fmt(v2.balance)} <small>QOR</small>`;
+  $("v2rem").innerHTML = `${fmt(v2.instantRemaining)} <small>/ ${fmt(v2.instantLimit)}</small>`;
+  $("v2barfill").style.width = (Number(v2.instantLimit) ? 100 * Number(v2.instantRemaining) / Number(v2.instantLimit) : 0) + "%";
+  $("v2delay").innerHTML = v2.delay >= 3600 ? `${v2.delay / 3600} <small>h</small>` : `${Math.round(v2.delay / 60)} <small>min</small>`;
+  $("v2q").textContent = v2.pending.length;
+  $("v2frozen").innerHTML = v2.frozen ? '<span class="badge b-frozen">FROZEN</span>' : '<span class="badge b-ok">ACTIVE</span>';
+  $("v2addr").textContent = v2.address; $("v2owner").textContent = v2.owner; $("v2guard").textContent = v2.guardian;
+  $("v2win").textContent = win(v2.ownerAccount?.window);
+  $("queue").innerHTML = v2.pending.length ? v2.pending.map((p) => `<tr><td class="mono">${p.id}</td><td>${esc(p.kind)}</td><td class="mono">${esc(p.summary.replace(/0x[0-9a-fA-F]{40}/g, short))}</td><td class="mono">${dur(p.secondsLeft)}</td><td>${p.secondsLeft <= 0 ? `<button data-a="v2-execute" data-id="${p.id}">Execute</button>` : ""}</td></tr>`).join("") : '<tr><td colspan="5" class="empty">empty</td></tr>';
+
+  const v1 = s.v1;
+  $("v1bal").innerHTML = `${fmt(v1.balance)} <small>QOR</small>`;
+  $("v1nonce").textContent = v1.nonce;
+  $("v1acc").innerHTML = v1.ownerAccount ? `${fmt(v1.ownerAccount.balance)} <small>QOR</small>` : "–";
+  $("v1addr").textContent = v1.address; $("v1owner").textContent = v1.owner;
+  $("v1win").textContent = win(v1.ownerAccount?.window);
+
+  feed($("gfeed"), s.guardian, (g) => [hhmmss(g.t), g.kind, (g.line || "").replace(/\b\d{16,}\b/g, (w) => fmt(Number(w) / 1e18) + " QOR").replace(/0x[0-9a-fA-F]{40}/g, short).replace(/0x[0-9a-fA-F]{64}/g, (h) => h.slice(0, 12) + "…"), "g" + g.t + g.line]);
+  feed($("dfeed"), s.drill, (d) => {
+    const line = d.kind === "state" ? `vault ${fmt(d.vaultQOR)} QOR · account ${fmt(d.accountQOR)} QOR · nonce ${d.ownerNonce} · window ${d.window?.live ? "LIVE" : "none"}`
+      : d.kind === "tx" ? `#${d.block} ${d.status ? "OK" : "FAIL"} ${d.fn || "transfer"} ${short(d.from)}→${short(d.to)}`
+      : d.kind === "event" ? `${d.name} ${JSON.stringify(d.args)}` : d.kind === "ALERT" ? d.alert : d.kind === "start" ? `watching ${short(d.vault)}` : (d.error || "");
+    return [hhmmss(d.t), d.kind, line, "d" + d.t + d.kind];
+  });
+  feed($("events"), s.events, (e) => [hhmmss(e.time), e.vault, `${e.name} ${Object.entries(e.args).map(([k, v]) => `${k}=${/^0x[0-9a-fA-F]{40}$/.test(v) ? short(v) : /^\d{16,}$/.test(v) ? fmt(Number(v) / 1e18) : v}`).join(" ")}`, "e" + e.hash + e.name]);
+  feed($("acts"), s.actions, (a) => [hhmmss(a.t), a.ok ? "ok" : "fail", `${a.action}: ${a.detail.replace(/0x[0-9a-fA-F]{40}/g, short)}${a.hash ? " · " + a.hash.slice(0, 12) + "…" : ""}`, "a" + a.t]);
+  if (running) document.querySelectorAll("button[data-a]").forEach((x) => (x.disabled = true));
+  last = s;
+}
+
+async function tick() {
+  try { const r = await fetch("/api/state"); const s = await r.json(); if (s.error) throw new Error(s.error); render(s); }
+  catch (e) { $("dot").className = "dot off"; $("net").textContent = "offline: " + e.message; }
+}
+
+function toast(text, cls) { const t = $("toast"); t.className = "show " + (cls || ""); t.innerHTML = text; clearTimeout(t._h); if (cls) t._h = setTimeout(() => (t.className = ""), 6000); }
+
+document.addEventListener("click", async (ev) => {
+  const b = ev.target.closest("button[data-a]"); if (!b || running) return;
+  const body = { action: b.dataset.a };
+  if (b.dataset.id) body.id = b.dataset.id;
+  body.amount = b.dataset.amount || $("amt").value;
+  running = true; document.querySelectorAll("button[data-a]").forEach((x) => (x.disabled = true));
+  toast(`<span class="spin"></span>${esc(b.textContent)} — signing with ML-DSA-87 and sending…`);
+  try {
+    const r = await (await fetch("/api/action", { method: "POST", headers: { "content-type": "application/json", "x-qvault": "1" }, body: JSON.stringify(body) })).json();
+    toast(r.ok ? `✓ ${esc(r.detail)}${r.hash ? `<div class="mono" style="color:var(--dim);margin-top:4px">${esc(r.hash)}</div>` : ""}` : `✗ ${esc(r.error)}`, r.ok ? "ok" : "err");
+  } catch (e) { toast("✗ " + esc(e.message), "err"); }
+  running = false; document.querySelectorAll("button[data-a]").forEach((x) => (x.disabled = false)); tick();
+});
+
+let recStart = null, marksN = 0;
+async function recCheck() {
+  try {
+    const r = await (await fetch("/api/recording")).json();
+    if (!r.recording) return;
+    recStart = r.startedAt; marksN = r.marks; $("rec").hidden = false;
+    setInterval(() => { const s = Math.floor((Date.now() - recStart) / 1000); $("rectime").textContent = `REC ${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }, 500);
+  } catch {}
+}
+$("markbtn").addEventListener("click", async () => {
+  const label = prompt("Scene label (optional):", `scene ${marksN + 1}`);
+  if (label === null) return;
+  const r = await (await fetch("/api/mark", { method: "POST", headers: { "content-type": "application/json", "x-qvault": "1" }, body: JSON.stringify({ label }) })).json();
+  if (r.ok) { marksN = r.n; toast(`● mark ${r.n}: ${esc(r.label)}`, "ok"); }
+});
+
+window.renderReplay = render; window.toastReplay = toast;
+if (!new URLSearchParams(location.search).has("replay")) { recCheck(); tick(); setInterval(tick, 2000); }
+else { $("net").textContent = "session replay"; document.querySelectorAll("button[data-a], #markbtn").forEach((b) => (b.disabled = true)); }
+</script>
+</body>
+</html>

@@ -4,6 +4,8 @@
 
 **A vault that a leaked ECDSA key cannot drain.**
 
+**Demo:** [replay of the testnet runs](https://ryssroad.github.io/qvault/demo/): the Q-Day Drill and the v2 thief-vs-guardian scenario, replayed in the real dashboard from recorded sessions.
+
 Built for [Build Before Q-Day](https://build.qorechain.io) — category **Post-Quantum dApp**, entered in the **Q-Day Drill**.
 
 On Q-Day, every secp256k1 key on every chain becomes public. QoreChain already protects its Cosmos lane with mandatory hybrid (secp256k1 + ML-DSA-87) signatures, but an EVM transaction is still signed with secp256k1 alone: whoever holds the classical key can spend inside any open EVM window, and any contract that authorises by `msg.sender` belongs to them. QVault removes that path. Every operation that moves value or changes authority needs an **ML-DSA-87 signature by the key the chain itself holds for the owner**, verified on chain through the `pqcVerify` precompile. The classical key grants nothing.
