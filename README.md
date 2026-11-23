@@ -136,7 +136,7 @@ The page binds only to 127.0.0.1, and POST requests need an `x-qvault: 1` header
 
 ### Testnet run, 14 Nov 2026
 
-Vault `0x032d58891efDdBa939bC349Ebb32B8A37191DE0f`, delay 300 s, instant budget 2 QOR/24 h, funded with 20 QOR. The "thief" signs with the real owner key.
+Vault `0x032d58891efDdBa939bC349Ebb32B8A37191DE0f` (deploy tx `0x464204c7e2efc35d083afc0d8d0e7ced611c916c08d8a4ca5e4d4b8e1be4b7ba`, block 10,081,419), delay 300 s, instant budget 2 QOR/24 h, funded with 20 QOR. The "thief" signs with the real owner key.
 
 | Step | Action | Guardian | Result |
 |---|---|---|---|
@@ -153,7 +153,7 @@ Final state: 13.5 QOR (20 − 1 − 5 − 0.5), not frozen, guardian unchanged. 
 
 - [x] Contract + tests against precompile mocks (real ABI from qorechain-core `docs/EVM_PRECOMPILES.md`)
 - [x] Withdraw client (`client/withdraw.ts`) and drill-account tool (`client/drill.ts`: key registration with proof of possession, deploy window, vault-only drill window, close) — run against testnet
-- [x] Testnet deployment: QVault `0x5a7f65d0573be384f64351f30a616ed48dca3015`, funded, first ML-DSA-87-authorised withdrawal `status 1`
+- [x] Testnet deployment: QVault `0x5a7f65d0573be384f64351f30a616ed48dca3015` (deploy tx `0xc2eb0be3425bbb356b7b3e466c89bb4c126dfabe80b0c604e3cb8e0724b97a69`, block 10,038,138), funded, first ML-DSA-87-authorised withdrawal `status 1`
 - [x] Q-Day Drill, 18 Nov: no attacker transaction accepted; the normal transaction was a PQ-signed withdrawal (see *Drill result*)
 - [x] Guardian agent: cancels unapproved queued operations, freezes on instant withdrawals to unknown recipients — run on testnet
 - [x] v2: instant budget + timelock, guardian veto — 27 Foundry tests, run on testnet
