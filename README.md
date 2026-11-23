@@ -159,8 +159,6 @@ All three accounts are the author's, on `qorechain-diana`. Each has its own ML-D
 | v2 owner, deployer of QVaultV2; signs as the "thief" in the v2 scenario | `0x85C146db8122834b859FA53B9EAC77fb16ba14F6` | `qor1shq5dkupy2p5hpvl55aeatrhlvtt598kmvje03` |
 | v2 guardian, used by the guardian agent | `0x5a9aE0cfCE6107d8355B072b01253118259FF802` | `qor1t2dwpn7wvyrasd2mqu4szff3rqjel7qzvlfh6m` |
 
-The v2 owner is a separate account so that the v2 scenario, which uses the owner's PQ key as a thief would, never touches the drill account.
-
 ## Status
 
 - [x] Contract + tests against precompile mocks (real ABI from qorechain-core `docs/EVM_PRECOMPILES.md`)
