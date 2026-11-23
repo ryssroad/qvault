@@ -149,6 +149,18 @@ Vault `0x032d58891efDdBa939bC349Ebb32B8A37191DE0f` (deploy tx `0x464204c7e2efc35
 
 Final state: 13.5 QOR (20 − 1 − 5 − 0.5), not frozen, guardian unchanged. Log: `guardian-log/2026-11-14.jsonl`.
 
+## Testnet accounts
+
+All three accounts are the author's, on `qorechain-diana`. Each has its own ML-DSA-87 key, registered with proof of possession.
+
+| Role | EVM | Cosmos |
+|---|---|---|
+| v1 owner, deployer of QVault; Q-Day Drill account (its ECDSA key was handed to the organizers) | `0x478E3441ec3f2Aad43bDec30F46756F8cD544f21` | `qor1g78rgs0v8u426saaasc0ge6klrx4gneph4gk3r` |
+| v2 owner, deployer of QVaultV2; signs as the "thief" in the v2 scenario | `0x85C146db8122834b859FA53B9EAC77fb16ba14F6` | `qor1shq5dkupy2p5hpvl55aeatrhlvtt598kmvje03` |
+| v2 guardian, used by the guardian agent | `0x5a9aE0cfCE6107d8355B072b01253118259FF802` | `qor1t2dwpn7wvyrasd2mqu4szff3rqjel7qzvlfh6m` |
+
+The v2 owner is a separate account so that the v2 scenario, which uses the owner's PQ key as a thief would, never touches the drill account.
+
 ## Status
 
 - [x] Contract + tests against precompile mocks (real ABI from qorechain-core `docs/EVM_PRECOMPILES.md`)
