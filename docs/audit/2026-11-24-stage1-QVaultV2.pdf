@@ -1,0 +1,617 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 7090
+>>
+stream
+0.5670000000000001 w
+0 G
+BT
+/F1 22 Tf
+25.2999999999999972 TL
+0.063 0.725 0.506 rg
+39.6850393700787407 785.1970866141732586 Td
+(QoreChain AI) Tj
+ET
+BT
+/F1 16 Tf
+18.3999999999999986 TL
+0.157 g
+39.6850393700787407 756.8506299212598378 Td
+(Security Audit Report) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.392 g
+39.6850393700787407 728.5041732283464171 Td
+(Generated: 11/24/2026, 4:04:16 AM) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.392 g
+39.6850393700787407 714.3309448818897636 Td
+(Contract Name: QVaultV2.flat.sol) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.392 g
+39.6850393700787407 700.15771653543311 Td
+(Blockchain: ethereum) Tj
+ET
+0.78 G
+39.6850393700787407 685.9844881889763428 m
+555.5905511811024553 685.9844881889763428 l
+S
+BT
+/F1 12 Tf
+13.7999999999999989 TL
+0. g
+39.6850393700787407 657.6380314960629221 Td
+(Audit Overview) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+39.6850393700787407 629.291574803149615 Td
+(Overall Security Score: 85/100) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+39.6850393700787407 615.1183464566928478 Td
+(Risk Level: MEDIUM) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+39.6850393700787407 600.9451181102361943 Td
+(Quantum Readiness: not scored for this setting) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+39.6850393700787407 586.7718897637794271 Td
+(Total Vulnerabilities: 4) Tj
+ET
+BT
+/F1 12 Tf
+13.7999999999999989 TL
+0. g
+39.6850393700787407 544.2522047244094665 Td
+(Executive Summary) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.235 g
+39.6850393700787407 515.9057480314959321 Td
+(The QVaultV2 contract implements a secure vault with timelock and guardian veto features. It uses post-quantum) Tj
+T* (cryptography for authentication and includes mechanisms for instant withdrawals within a budget and queued) Tj
+T* (operations. While the contract is generally well-designed, there are some potential vulnerabilities related to access) Tj
+T* (control and integer safety that need to be addressed.) Tj
+ET
+0.78 G
+0.5670000000000001 w
+0.78 G
+0.5670000000000001 w
+0.06 0.73 0.51 rg
+0.78 G
+0. w
+0.06 0.73 0.51 rg
+40. 430.8663779527558404 95.5208295206423941 -21.4999999999999964 re
+f
+BT
+/F2 10 Tf
+11.5 TL
+1. g
+45. 417.3663779527558972 Td
+(Vulnerability) Tj
+ET
+0.06 0.73 0.51 rg
+0.78 G
+0. w
+0.06 0.73 0.51 rg
+135.5208295206423941 430.8663779527558404 48.6000000000000014 -21.4999999999999964 re
+f
+BT
+/F2 10 Tf
+11.5 TL
+1. g
+140.5208295206423657 417.3663779527558972 Td
+(Severity) Tj
+ET
+0.06 0.73 0.51 rg
+0.78 G
+0. w
+0.06 0.73 0.51 rg
+184.1208295206423884 430.8663779527558404 79.5699999999999932 -21.4999999999999964 re
+f
+BT
+/F2 10 Tf
+11.5 TL
+1. g
+189.12082952064236 417.3663779527558972 Td
+(Location) Tj
+ET
+0.06 0.73 0.51 rg
+0.78 G
+0. w
+0.06 0.73 0.51 rg
+263.6908295206423531 430.8663779527558404 291.5891704794778434 -21.4999999999999964 re
+f
+BT
+/F2 10 Tf
+11.5 TL
+1. g
+268.6908295206423531 417.3663779527558972 Td
+(Recommendation) Tj
+ET
+0.78 G
+0.5670000000000001 w
+0.96 g
+0.78 G
+0. w
+0.96 g
+40. 409.3663779527558404 95.5208295206423941 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+45. 396.71637795275592 Td
+(Missing Access) Tj
+T* (Control for Critical) Tj
+T* (Functions) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+135.5208295206423941 409.3663779527558404 48.6000000000000014 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+140.5208295206423657 396.71637795275592 Td
+(HIGH) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+184.1208295206423884 409.3663779527558404 79.5699999999999932 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+189.12082952064236 396.71637795275592 Td
+(QVaultV2.sol:194) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+263.6908295206423531 409.3663779527558404 291.5891704794778434 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+268.6908295206423531 396.71637795275592 Td
+(Implement a more robust access control mechanism that ensures only) Tj
+T* (authorized parties can cancel operations, regardless of whether a) Tj
+T* (guardian is present.) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+40. 368.316377952755829 95.5208295206423941 -30.6999999999999993 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+45. 355.6663779527559086 Td
+(Potential Overflow in) Tj
+T* (Budget Calculation) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+135.5208295206423941 368.316377952755829 48.6000000000000014 -30.6999999999999993 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+140.5208295206423657 355.6663779527559086 Td
+(MEDIUM) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+184.1208295206423884 368.316377952755829 79.5699999999999932 -30.6999999999999993 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+189.12082952064236 355.6663779527559086 Td
+(QVaultV2.sol:243) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+263.6908295206423531 368.316377952755829 291.5891704794778434 -30.6999999999999993 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+268.6908295206423531 355.6663779527559086 Td
+(Ensure that the budget calculation logic correctly handles edge cases) Tj
+T* (and prevent potential underflows or overflows in budget tracking.) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+40. 337.6163779527558404 95.5208295206423941 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+45. 324.96637795275592 Td
+(Unbounded Loop) Tj
+T* (Potential in Pending) Tj
+T* (Operations) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+135.5208295206423941 337.6163779527558404 48.6000000000000014 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+140.5208295206423657 324.96637795275592 Td
+(LOW) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+184.1208295206423884 337.6163779527558404 79.5699999999999932 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+189.12082952064236 324.96637795275592 Td
+(QVaultV2.sol:102) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+263.6908295206423531 337.6163779527558404 291.5891704794778434 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+268.6908295206423531 324.96637795275592 Td
+(Consider implementing a mechanism to clean up old pending) Tj
+T* (operations or limit the number of pending operations to prevent) Tj
+T* (excessive storage usage.) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+40. 296.566377952755829 95.5208295206423941 -30.6999999999999993 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+45. 283.9163779527558518 Td
+(Guardian Veto) Tj
+T* (Mechanism) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+135.5208295206423941 296.566377952755829 48.6000000000000014 -30.6999999999999993 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+140.5208295206423657 283.9163779527558518 Td
+(INFO) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+184.1208295206423884 296.566377952755829 79.5699999999999932 -30.6999999999999993 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+189.12082952064236 283.9163779527558518 Td
+(QVaultV2.sol:194) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+263.6908295206423531 296.566377952755829 291.5891704794778434 -30.6999999999999993 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+268.6908295206423531 283.9163779527558518 Td
+(Ensure that the guardian key is managed securely and consider) Tj
+T* (implementing multi-signature requirements for guardian actions.) Tj
+ET
+0.78 G
+0.5670000000000001 w
+0.78 G
+0. w
+0.78 G
+0.5670000000000001 w
+0.78 G
+0.5670000000000001 w
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+0.588 g
+227.5977952755905562 19.8427559055116944 Td
+(Page 1 of 1 - Powered by QoreChain AI) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 4.0.0)
+/CreationDate (D:20261124040416+05'00')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000007294 00000 n 
+0000009111 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000007351 00000 n 
+0000007476 00000 n 
+0000007606 00000 n 
+0000007739 00000 n 
+0000007876 00000 n 
+0000007999 00000 n 
+0000008128 00000 n 
+0000008260 00000 n 
+0000008396 00000 n 
+0000008524 00000 n 
+0000008651 00000 n 
+0000008780 00000 n 
+0000008913 00000 n 
+0000009015 00000 n 
+0000009359 00000 n 
+0000009445 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <9A197BAB574714FA83C2FA8252A89917> <9A197BAB574714FA83C2FA8252A89917> ]
+>>
+startxref
+9549
+%%EOF

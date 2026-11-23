@@ -337,4 +337,79 @@ contract QVaultV2Test is Test {
         assertLe(taken, LIMIT);
         assertEq(thief.balance, taken);
     }
+
+    // ---------------------------------------------------------------- QCAI audit, Stage 1 (docs/AUDIT.md)
+
+    /// Finding V2-1: cancel is access-controlled by signature, not by msg.sender.
+    function test_audit_cancel_needsTheGuardiansSignatureForThatId() public {
+        uint256 a = _queue(QVaultV2.Kind.Withdraw, abi.encode(address(0), safe, 10 ether));
+        uint256 b = _queue(QVaultV2.Kind.Withdraw, abi.encode(address(0), safe, 20 ether));
+        uint256 dl = _dl();
+        vm.prank(guardian); // being the guardian's address grants nothing
+        vm.expectRevert(QVaultV2.BadSignature.selector);
+        vault.cancel(a, dl, new bytes(4627));
+        bytes memory forB = _sign(guardianPub, vault.digest(QVaultV2.Op.Cancel, vault.guardianNonce(), dl, abi.encode(b)));
+        vm.expectRevert(QVaultV2.BadSignature.selector); // a signature for one id does not cancel another
+        vault.cancel(a, dl, forB);
+        vm.expectRevert(abi.encodeWithSelector(QVaultV2.UnknownOperation.selector, 99));
+        vault.cancel(99, dl, forB);
+        (, uint64 eta,) = vault.pending(a);
+        assertGt(eta, 0);
+    }
+
+    function test_audit_cancel_withoutGuardian_onlyTheOwnerSigns() public {
+        QVaultV2 solo = new QVaultV2(owner, address(0), DELAY, LIMIT);
+        uint256 dl = _dl();
+        bytes memory data = abi.encode(address(0), safe, 1 ether);
+        uint256 id = solo.queue(QVaultV2.Kind.Withdraw, data, dl, _sign(ownerPub, solo.queueDigest(QVaultV2.Kind.Withdraw, data, dl)));
+        bytes memory byGuardianKey = _sign(guardianPub, solo.digest(QVaultV2.Op.Cancel, solo.ownerNonce(), dl, abi.encode(id)));
+        vm.expectRevert(QVaultV2.BadSignature.selector);
+        solo.cancel(id, dl, byGuardianKey);
+        solo.cancel(id, dl, _sign(ownerPub, solo.digest(QVaultV2.Op.Cancel, solo.ownerNonce(), dl, abi.encode(id))));
+        (, uint64 eta,) = solo.pending(id);
+        assertEq(eta, 0);
+    }
+
+    /// Finding V2-2: budget arithmetic at its edges (checked arithmetic, no underflow).
+    function test_audit_budget_exactLimit_thenOneWeiReverts() public {
+        _withdraw(address(0), safe, LIMIT);
+        uint256 dl = _dl();
+        bytes memory sig = _sign(ownerPub, vault.withdrawDigest(address(0), safe, 1, dl));
+        vm.expectRevert(abi.encodeWithSelector(QVaultV2.OverInstantBudget.selector, 0));
+        vault.withdraw(address(0), safe, 1, dl, sig);
+    }
+
+    function test_audit_limitLoweredBelowSpent_leavesZero() public {
+        _withdraw(address(0), safe, 4 ether);
+        uint256 id = _queue(QVaultV2.Kind.SetLimit, abi.encode(address(0), uint256(1 ether)));
+        vm.warp(block.timestamp + DELAY);
+        vault.execute(id);
+        assertEq(vault.instantRemaining(address(0)), 0); // spent 4 > limit 1: no underflow
+        uint256 dl = _dl();
+        bytes memory sig = _sign(ownerPub, vault.withdrawDigest(address(0), safe, 1, dl));
+        vm.expectRevert(abi.encodeWithSelector(QVaultV2.OverInstantBudget.selector, 0));
+        vault.withdraw(address(0), safe, 1, dl, sig);
+    }
+
+    function test_audit_maxLimit_noOverflow() public {
+        uint256 id = _queue(QVaultV2.Kind.SetLimit, abi.encode(address(0), type(uint256).max));
+        vm.warp(block.timestamp + DELAY);
+        vault.execute(id);
+        _withdraw(address(0), safe, 60 ether);
+        _withdraw(address(0), safe, 40 ether);
+        assertEq(vault.instantRemaining(address(0)), type(uint256).max - 100 ether);
+    }
+
+    /// Finding V2-3: pending operations are a mapping, never iterated; stale ones are inert.
+    function test_audit_manyPending_doNotAffectOtherOperations() public {
+        for (uint256 i; i < 50; i++) {
+            _queue(QVaultV2.Kind.Withdraw, abi.encode(address(0), safe, 1 wei));
+        }
+        uint256 id = _queue(QVaultV2.Kind.Withdraw, abi.encode(address(0), safe, 1 ether));
+        vm.warp(block.timestamp + DELAY);
+        uint256 g = gasleft();
+        vault.execute(id);
+        assertLt(g - gasleft(), 100_000); // cost of one execute does not grow with the queue
+        assertEq(safe.balance, 1 ether);
+    }
 }

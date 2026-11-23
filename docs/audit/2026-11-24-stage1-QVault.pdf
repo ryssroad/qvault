@@ -1,0 +1,619 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 7089
+>>
+stream
+0.5670000000000001 w
+0 G
+BT
+/F1 22 Tf
+25.2999999999999972 TL
+0.063 0.725 0.506 rg
+39.6850393700787407 785.1970866141732586 Td
+(QoreChain AI) Tj
+ET
+BT
+/F1 16 Tf
+18.3999999999999986 TL
+0.157 g
+39.6850393700787407 756.8506299212598378 Td
+(Security Audit Report) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.392 g
+39.6850393700787407 728.5041732283464171 Td
+(Generated: 11/24/2026, 4:01:35 AM) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.392 g
+39.6850393700787407 714.3309448818897636 Td
+(Contract Name: QVault.flat.sol) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.392 g
+39.6850393700787407 700.15771653543311 Td
+(Blockchain: ethereum) Tj
+ET
+0.78 G
+39.6850393700787407 685.9844881889763428 m
+555.5905511811024553 685.9844881889763428 l
+S
+BT
+/F1 12 Tf
+13.7999999999999989 TL
+0. g
+39.6850393700787407 657.6380314960629221 Td
+(Audit Overview) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+39.6850393700787407 629.291574803149615 Td
+(Overall Security Score: 92/100) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+39.6850393700787407 615.1183464566928478 Td
+(Risk Level: MEDIUM) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+39.6850393700787407 600.9451181102361943 Td
+(Quantum Readiness: not scored for this setting) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0. g
+39.6850393700787407 586.7718897637794271 Td
+(Total Vulnerabilities: 4) Tj
+ET
+BT
+/F1 12 Tf
+13.7999999999999989 TL
+0. g
+39.6850393700787407 544.2522047244094665 Td
+(Executive Summary) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.235 g
+39.6850393700787407 515.9057480314959321 Td
+(The QVault contract implements a secure vault mechanism using post-quantum cryptography for authorization. It) Tj
+T* (prevents traditional ECDSA key-based attacks by requiring ML-DSA-87 signatures from keys held by the chain.) Tj
+T* (However, there are some potential issues related to access control and front-running vulnerabilities that need) Tj
+T* (attention. The contract also includes several good practices such as proper error handling and use of domain) Tj
+T* (separation in signatures.) Tj
+ET
+0.78 G
+0.5670000000000001 w
+0.78 G
+0.5670000000000001 w
+0.06 0.73 0.51 rg
+0.78 G
+0. w
+0.06 0.73 0.51 rg
+40. 416.69314960629913 98.3876528892139248 -21.4999999999999964 re
+f
+BT
+/F2 10 Tf
+11.5 TL
+1. g
+45. 403.1931496062991869 Td
+(Vulnerability) Tj
+ET
+0.06 0.73 0.51 rg
+0.78 G
+0. w
+0.06 0.73 0.51 rg
+138.3876528892139106 416.69314960629913 48.6000000000000014 -21.4999999999999964 re
+f
+BT
+/F2 10 Tf
+11.5 TL
+1. g
+143.3876528892139106 403.1931496062991869 Td
+(Severity) Tj
+ET
+0.06 0.73 0.51 rg
+0.78 G
+0. w
+0.06 0.73 0.51 rg
+186.9876528892139333 416.69314960629913 63.730000000000004 -21.4999999999999964 re
+f
+BT
+/F2 10 Tf
+11.5 TL
+1. g
+191.9876528892139049 403.1931496062991869 Td
+(Location) Tj
+ET
+0.06 0.73 0.51 rg
+0.78 G
+0. w
+0.06 0.73 0.51 rg
+250.7176528892139231 416.69314960629913 304.5623471108328317 -21.4999999999999964 re
+f
+BT
+/F2 10 Tf
+11.5 TL
+1. g
+255.7176528892139231 403.1931496062991869 Td
+(Recommendation) Tj
+ET
+0.78 G
+0.5670000000000001 w
+0.96 g
+0.78 G
+0. w
+0.96 g
+40. 395.1931496062991869 98.3876528892139248 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+45. 382.5431496062992096 Td
+(Potential Privilege) Tj
+T* (Escalation via Owner) Tj
+T* (Change) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+138.3876528892139106 395.1931496062991869 48.6000000000000014 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143.3876528892139106 382.5431496062992096 Td
+(HIGH) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+186.9876528892139333 395.1931496062991869 63.730000000000004 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+191.9876528892139049 382.5431496062992096 Td
+(QVault.sol:77) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+250.7176528892139231 395.1931496062991869 304.5623471108328317 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+255.7176528892139231 382.5431496062992096 Td
+(Ensure that the new owner address has a valid PQC key before allowing) Tj
+T* (the ownership change.) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+40. 354.1431496062991187 98.3876528892139248 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+45. 341.4931496062991982 Td
+(Front-Running) Tj
+T* (Vulnerability in) Tj
+T* (Withdraw Function) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+138.3876528892139106 354.1431496062991187 48.6000000000000014 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143.3876528892139106 341.4931496062991982 Td
+(MEDIUM) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+186.9876528892139333 354.1431496062991187 63.730000000000004 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+191.9876528892139049 341.4931496062991982 Td
+(QVault.sol:53) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+250.7176528892139231 354.1431496062991187 304.5623471108328317 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+255.7176528892139231 341.4931496062991982 Td
+(Implement additional protections against front-running such as using a) Tj
+T* (commitment scheme or increasing the complexity of the signature) Tj
+T* (verification process.) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+40. 313.0931496062991073 98.3876528892139248 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+45. 300.44314960629913 Td
+(Unbounded Loop) Tj
+T* (Potential in External) Tj
+T* (Calls) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+138.3876528892139106 313.0931496062991073 48.6000000000000014 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143.3876528892139106 300.44314960629913 Td
+(LOW) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+186.9876528892139333 313.0931496062991073 63.730000000000004 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+191.9876528892139049 300.44314960629913 Td
+(QVault.sol:59) Tj
+ET
+0.96 g
+0.78 G
+0. w
+0.96 g
+250.7176528892139231 313.0931496062991073 304.5623471108328317 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+255.7176528892139231 300.44314960629913 Td
+(Add checks to ensure that the token contract is well-formed and behaves) Tj
+T* (correctly before performing transfers.) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+40. 272.0431496062990959 98.3876528892139248 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+45. 259.3931496062991755 Td
+(Missing ERC20) Tj
+T* (Standard) Tj
+T* (Implementation) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+138.3876528892139106 272.0431496062990959 48.6000000000000014 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143.3876528892139106 259.3931496062991755 Td
+(INFO) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+186.9876528892139333 272.0431496062990959 63.730000000000004 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+191.9876528892139049 259.3931496062991755 Td
+(QVault.sol) Tj
+ET
+1. g
+0.78 G
+0. w
+1. g
+250.7176528892139231 272.0431496062990959 304.5623471108328317 -41.0499999999999972 re
+f
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+255.7176528892139231 259.3931496062991755 Td
+(Consider implementing the full ERC20 standard if the contract intends to) Tj
+T* (act as an ERC20 token.) Tj
+ET
+0.78 G
+0.5670000000000001 w
+0.78 G
+0. w
+0.78 G
+0.5670000000000001 w
+0.78 G
+0.5670000000000001 w
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+0.588 g
+227.5977952755905562 19.8427559055116944 Td
+(Page 1 of 1 - Powered by QoreChain AI) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 4.0.0)
+/CreationDate (D:20261124040135+05'00')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000007293 00000 n 
+0000009110 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000007350 00000 n 
+0000007475 00000 n 
+0000007605 00000 n 
+0000007738 00000 n 
+0000007875 00000 n 
+0000007998 00000 n 
+0000008127 00000 n 
+0000008259 00000 n 
+0000008395 00000 n 
+0000008523 00000 n 
+0000008650 00000 n 
+0000008779 00000 n 
+0000008912 00000 n 
+0000009014 00000 n 
+0000009358 00000 n 
+0000009444 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <C510DE5EC88DBB0D441FA36D9073E27A> <C510DE5EC88DBB0D441FA36D9073E27A> ]
+>>
+startxref
+9548
+%%EOF

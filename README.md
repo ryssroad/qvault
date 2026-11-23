@@ -4,6 +4,8 @@
 
 **A vault that a leaked ECDSA key cannot drain.**
 
+**Audit:** two-stage QCAI audit, reports and responses in [docs/AUDIT.md](docs/AUDIT.md).
+
 **Video:** [2-minute walkthrough](https://youtu.be/u0O4q84Pm4o) · **Demo:** [replay of the testnet runs](https://ryssroad.github.io/qvault/demo/): the Q-Day Drill and the v2 thief-vs-guardian scenario, replayed in the real dashboard from recorded sessions.
 
 Built for [Build Before Q-Day](https://build.qorechain.io) — category **Post-Quantum dApp**, entered in the **Q-Day Drill**.
@@ -71,7 +73,7 @@ The account's sequence advanced by exactly 3, and all three transactions are our
 
 ```sh
 forge install foundry-rs/forge-std
-forge test -vv         # 19 tests: leaked-ECDSA, replay, binding, guardian, fail-closed, fuzz
+forge test -vv         # 51 tests (v1 and v2): leaked-ECDSA, replay, binding, guardian, timelock, budget, fail-closed, fuzz
 ```
 
 Testnet runbook (`qorechain-diana`, EVM chain id 9800):
@@ -154,8 +156,9 @@ Final state: 13.5 QOR (20 − 1 − 5 − 0.5), not frozen, guardian unchanged. 
 - [x] Testnet deployment: QVault `0x5a7f65d0573be384f64351f30a616ed48dca3015`, funded, first ML-DSA-87-authorised withdrawal `status 1`
 - [x] Q-Day Drill, 18 Nov: no attacker transaction accepted; the normal transaction was a PQ-signed withdrawal (see *Drill result*)
 - [x] Guardian agent: cancels unapproved queued operations, freezes on instant withdrawals to unknown recipients — run on testnet
-- [x] v2: instant budget + timelock, guardian veto — 21 Foundry tests, run on testnet
+- [x] v2: instant budget + timelock, guardian veto — 27 Foundry tests, run on testnet
 - [x] Local dashboard with session recording (`client/server.ts`)
+- [ ] QCAI audit: Stage 1 done (8 findings, all answered with regression tests, no contract change), Stage 2 pending — see [docs/AUDIT.md](docs/AUDIT.md)
 - [x] Demo video (https://youtu.be/u0O4q84Pm4o) and replay demo (https://ryssroad.github.io/qvault/demo/)
 
 ## Credits

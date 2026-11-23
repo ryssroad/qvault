@@ -19,6 +19,26 @@ contract MockToken {
     }
 }
 
+/// Non-standard tokens for the Stage 1 audit finding on external token calls.
+contract FalseToken {
+    function transfer(address, uint256) external pure returns (bool) {
+        return false;
+    }
+}
+
+contract NoReturnToken {
+    mapping(address => uint256) public balanceOf;
+
+    function mint(address to, uint256 a) external {
+        balanceOf[to] += a;
+    }
+
+    function transfer(address to, uint256 a) external {
+        balanceOf[msg.sender] -= a;
+        balanceOf[to] += a;
+    }
+}
+
 /// Threat model under test: the attacker holds the owner's classical secp256k1 key
 /// (can send any EVM tx as `owner`) but not the owner's ML-DSA-87 secret.
 contract QVaultTest is Test {
@@ -258,5 +278,64 @@ contract QVaultTest is Test {
         vm.assume(to != address(0));
         vm.expectRevert(QVault.BadSignature.selector);
         vault.withdraw(address(0), payable(to), amount, block.timestamp + 1, sig);
+    }
+
+    // ---------------------------------------------------------------- QCAI audit, Stage 1 (docs/AUDIT.md)
+
+    /// Finding V1-1: the new owner (and guardian) must hold a proven ML-DSA-87 key.
+    function test_audit_setGuardian_requiresProvenKey() public {
+        address noKey = makeAddr("noKey");
+        address unproven = makeAddr("unproven");
+        _register(unproven, _pub("unproven"), false);
+        uint256 dl = block.timestamp + 1 hours;
+        bytes memory sig = _sign(ownerPub, vault.digest(QVault.Op.SetGuardian, 0, dl, abi.encode(noKey)));
+        vm.expectRevert(abi.encodeWithSelector(QVault.NoPQCKey.selector, noKey));
+        vault.setGuardian(noKey, dl, sig);
+        sig = _sign(ownerPub, vault.digest(QVault.Op.SetGuardian, 0, dl, abi.encode(unproven)));
+        vm.expectRevert(abi.encodeWithSelector(QVault.PossessionNotProven.selector, unproven));
+        vault.setGuardian(unproven, dl, sig);
+        assertEq(vault.guardian(), guardian);
+    }
+
+    /// Finding V1-2: a front-runner can only submit exactly what the owner signed.
+    function test_audit_frontRunRelay_cannotChangeOutcome() public {
+        uint256 dl = block.timestamp + 1 hours;
+        bytes memory sig = _signWithdraw(address(0), dest, 1 ether, dl);
+        vm.prank(attacker); // copies the signature from the mempool and redirects it
+        vm.expectRevert(QVault.BadSignature.selector);
+        vault.withdraw(address(0), payable(attacker), 1 ether, dl, sig);
+        vm.prank(attacker); // or relays it unchanged first
+        vault.withdraw(address(0), dest, 1 ether, dl, sig);
+        vm.expectRevert(QVault.BadSignature.selector); // the original submission is now a replay
+        vault.withdraw(address(0), dest, 1 ether, dl, sig);
+        assertEq(dest.balance, 1 ether);
+        assertEq(attacker.balance, 0);
+    }
+
+    /// Finding V1-3: no loop; a malformed token cannot fake a successful transfer.
+    function test_audit_tokenReturningFalse_reverts() public {
+        FalseToken bad = new FalseToken();
+        uint256 dl = block.timestamp + 1 hours;
+        bytes memory sig = _signWithdraw(address(bad), dest, 1, dl);
+        vm.expectRevert(QVault.TransferFailed.selector);
+        vault.withdraw(address(bad), dest, 1, dl, sig);
+        assertEq(vault.ownerNonce(), 0);
+    }
+
+    function test_audit_tokenWithoutCode_reverts() public {
+        address notAToken = makeAddr("notAToken");
+        uint256 dl = block.timestamp + 1 hours;
+        bytes memory sig = _signWithdraw(notAToken, dest, 1, dl);
+        vm.expectRevert(QVault.TransferFailed.selector);
+        vault.withdraw(notAToken, dest, 1, dl, sig);
+    }
+
+    function test_audit_tokenWithoutReturnValue_works() public {
+        NoReturnToken usdtLike = new NoReturnToken();
+        usdtLike.mint(address(vault), 10);
+        uint256 dl = block.timestamp + 1 hours;
+        bytes memory sig = _signWithdraw(address(usdtLike), dest, 10, dl);
+        vault.withdraw(address(usdtLike), dest, 10, dl, sig);
+        assertEq(usdtLike.balanceOf(dest), 10);
     }
 }
