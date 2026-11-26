@@ -73,7 +73,7 @@ The account's sequence advanced by exactly 3, and all three transactions are our
 
 ```sh
 forge install foundry-rs/forge-std
-forge test -vv         # 51 tests (v1 and v2): leaked-ECDSA, replay, binding, guardian, timelock, budget, fail-closed, fuzz
+forge test -vv         # 53 tests (v1 and v2): leaked-ECDSA, replay, binding, guardian, timelock, budget, fail-closed, fuzz
 ```
 
 Testnet runbook (`qorechain-diana`, EVM chain id 9800):
@@ -166,9 +166,9 @@ All three accounts are the author's, on `qorechain-diana`. Each has its own ML-D
 - [x] Testnet deployment: QVault `0x5a7f65d0573be384f64351f30a616ed48dca3015` (deploy tx `0xc2eb0be3425bbb356b7b3e466c89bb4c126dfabe80b0c604e3cb8e0724b97a69`, block 10,038,138), funded, first ML-DSA-87-authorised withdrawal `status 1`
 - [x] Q-Day Drill, 18 Nov: no attacker transaction accepted; the normal transaction was a PQ-signed withdrawal (see *Drill result*)
 - [x] Guardian agent: cancels unapproved queued operations, freezes on instant withdrawals to unknown recipients — run on testnet
-- [x] v2: instant budget + timelock, guardian veto — 27 Foundry tests, run on testnet
+- [x] v2: instant budget + timelock, guardian veto — 28 Foundry tests, run on testnet
 - [x] Local dashboard with session recording (`client/server.ts`)
-- [ ] QCAI audit: Stage 1 done (8 findings, all answered with regression tests, no contract change), Stage 2 pending — see [docs/AUDIT.md](docs/AUDIT.md)
+- [x] Two-stage QCAI audit (24 and 26 Nov): every finding answered, with regression tests; no contract change was needed — see [docs/AUDIT.md](docs/AUDIT.md)
 - [x] Demo video (https://youtu.be/u0O4q84Pm4o) and replay demo (https://ryssroad.github.io/qvault/demo/)
 
 ## Credits

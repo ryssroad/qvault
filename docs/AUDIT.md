@@ -5,9 +5,9 @@ Two-stage audit with the QoreChain AI Smart Contract Auditor (dashboard.qorechai
 | Stage | Date | QVault | QVaultV2 |
 |---|---|---|---|
 | 1 | 24 Nov 2026 (04:01 / 04:04 Almaty) | [report](audit/2026-11-24-stage1-QVault.pdf): 92/100, 4 findings | [report](audit/2026-11-24-stage1-QVaultV2.pdf): 85/100, 4 findings |
-| 2 | pending | | |
+| 2 | 26 Nov 2026 (19:54 / 19:55 Almaty) | [report](audit/2026-11-26-stage2-QVault.pdf): 92/100, 4 findings | [report](audit/2026-11-26-stage2-QVaultV2.pdf): 85/100, 5 findings |
 
-**What was audited.** `src/QVault.sol` and `src/QVaultV2.sol`, each with `src/interfaces/IQorePQC.sol` pasted in place of its `import`, because the auditor takes one file. The exact uploads are [`audit/QVault.flat.sol`](audit/QVault.flat.sol) and [`audit/QVaultV2.flat.sol`](audit/QVaultV2.flat.sol). The line numbers in the reports do not match these files, so the findings below are matched by their description.
+**What was audited.** Both stages audited the same source: no Stage 1 finding needed a contract change, so the contracts did not change between the stages. `src/QVault.sol` and `src/QVaultV2.sol`, each with `src/interfaces/IQorePQC.sol` pasted in place of its `import`, because the auditor takes one file. The exact uploads are [`audit/QVault.flat.sol`](audit/QVault.flat.sol) and [`audit/QVaultV2.flat.sol`](audit/QVaultV2.flat.sol). The line numbers in the reports do not match these files, so the findings below are matched by their description.
 
 **Quantum readiness: "not scored".** The auditor produces this rating only for its CosmWasm setting. The PQC design is described [below](#pqc-design).
 
@@ -33,6 +33,22 @@ No contract change was needed. Each finding is answered with a regression test t
 | V2-3 | Unbounded loop in pending operations | Low | **False positive** for the loop: pending operations are a mapping by id and are never iterated, so their number does not change the cost of any call. Each one needs the owner's signature and a transaction fee to create. An operation not executed within `GRACE` (14 days) after its eta can never execute. Tests: existing `test_staleOperation_cannotExecute`; new `test_audit_manyPending_doNotAffectOtherOperations`. |
 | V2-4 | Guardian veto; "consider multi-signature for the guardian" | Info | **Acknowledged, by design.** The guardian can only freeze and cancel; it can never move funds or change authority (`test_guardianKey_cannotMoveFundsOrChangeAuthority`), and a guardian that disappears blocks nothing (`test_deadGuardian_cannotBlock_unfreezeAndRemoval`). Its key is a separate ML-DSA-87 key held by the guardian agent. A post-quantum multisig guardian is future work. |
 
+## Stage 2 findings
+
+Stage 2 ran on the same source in the same setting, after every Stage 1 finding had been worked through. The auditor is a language model and words its findings differently on each run, so most Stage 2 items restate Stage 1 ones; three are new and are answered below. Two new regression tests, prefixed `test_audit2_`, pin them.
+
+| Contract | Finding | Severity | Resolution |
+|---|---|---|---|
+| QVault | Missing access control on `guardianFreeze`: "require msg.sender == guardian" | High | **False positive.** `guardianFreeze` verifies the guardian's ML-DSA-87 signature with the guardian's nonce; a `msg.sender` check would add nothing, since the threat model assumes classical keys leak. Test (new): `test_audit2_guardianFreeze_needsTheGuardiansSignature`; existing `test_guardianFreeze_blocksWithdraw_onlyOwnerUnfreezes`. |
+| QVault | Potential overflow in nonce increment | Medium | **False positive.** Solidity 0.8 checked arithmetic; a `uint256` nonce incremented once per signed operation cannot reach 2^256. |
+| QVault | Unbounded loop in external calls | Low | Same as V1-3. |
+| QVault | Signature replay protection | Info | Positive note; covered by `test_replay_rejected`. |
+| QVaultV2 | Missing access control: "prevent the owner from cancelling when a guardian exists" | High | **Already the behaviour.** The owner's signature is accepted only when no guardian is set. Same as V2-1; `test_thiefWithOwnerKey_cannotCancelOwnersRescue`. |
+| QVaultV2 | Potential overflow in budget calculation | Medium | Same as V2-2. |
+| QVaultV2 | Front-running in `queue` | Medium | **False positive by design**, as V1-2: the signature binds the kind and data of the operation, the nonce and the deadline, so a front-runner can only queue exactly what the owner signed. Test (new): `test_audit2_queueFrontRun_cannotChangeTheOperation`. |
+| QVaultV2 | Unbounded storage mapping | Low | Same as V2-3. |
+| QVaultV2 | Missing ERC-20 implementation | Info | Same as V1-4: a vault, not a token. |
+
 ## PQC design
 
 Both contracts use the two QoreChain PQC precompiles, active on Diana testnet:
@@ -44,4 +60,4 @@ Both contracts use the two QoreChain PQC precompiles, active on Diana testnet:
 
 An inactive precompile makes both calls revert, so the vault fails closed. Tests: `test_inactivePrecompile_failsClosed` (both contracts), `test_copiedPubkeyWithoutPossession_rejected`, `test_attackerOwnPQKey_isNotOwners`, `test_leakedEcdsa_cannotWithdraw`, `test_leakedEcdsa_stillNothing`, `testFuzz_randomSignature_neverPasses`. On Diana, the Q-Day Drill (README) exercised this with the account's ECDSA key handed to the organizers.
 
-Run: `forge test` (51 tests).
+Run: `forge test` (53 tests).

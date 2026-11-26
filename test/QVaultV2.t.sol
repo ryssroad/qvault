@@ -412,4 +412,28 @@ contract QVaultV2Test is Test {
         assertLt(g - gasleft(), 100_000); // cost of one execute does not grow with the queue
         assertEq(safe.balance, 1 ether);
     }
+
+    // ---------------------------------------------------------------- QCAI audit, Stage 2 (docs/AUDIT.md)
+
+    /// Stage 2, V2: a front-runner can only queue exactly what the owner signed.
+    function test_audit2_queueFrontRun_cannotChangeTheOperation() public {
+        bytes memory data = abi.encode(address(0), safe, 3 ether);
+        uint256 dl = _dl();
+        bytes memory sig = _sign(ownerPub, vault.queueDigest(QVaultV2.Kind.Withdraw, data, dl));
+        vm.prank(thief); // copies the signature and swaps the recipient
+        vm.expectRevert(QVaultV2.BadSignature.selector);
+        vault.queue(QVaultV2.Kind.Withdraw, abi.encode(address(0), thief, 3 ether), dl, sig);
+        MockPQC(KEYSTATUS).setKey(thief, 1, _pub("thief"), true); // even with a usable key of his own
+        vm.prank(thief); // swapping the kind fails on the owner's signature
+        vm.expectRevert(QVaultV2.BadSignature.selector);
+        vault.queue(QVaultV2.Kind.SetOwner, abi.encode(thief), dl, sig);
+        vm.prank(thief); // relaying it unchanged queues exactly the owner's operation
+        uint256 id = vault.queue(QVaultV2.Kind.Withdraw, data, dl, sig);
+        vm.expectRevert(QVaultV2.BadSignature.selector); // a second submission is a replay
+        vault.queue(QVaultV2.Kind.Withdraw, data, dl, sig);
+        vm.warp(block.timestamp + DELAY);
+        vault.execute(id);
+        assertEq(safe.balance, 3 ether);
+        assertEq(thief.balance, 0);
+    }
 }

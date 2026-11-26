@@ -338,4 +338,19 @@ contract QVaultTest is Test {
         vault.withdraw(address(usdtLike), dest, 10, dl, sig);
         assertEq(usdtLike.balanceOf(dest), 10);
     }
+
+    // ---------------------------------------------------------------- QCAI audit, Stage 2 (docs/AUDIT.md)
+
+    /// Stage 2, V1: guardianFreeze is access-controlled by the guardian's signature, not by msg.sender.
+    function test_audit2_guardianFreeze_needsTheGuardiansSignature() public {
+        uint256 dl = block.timestamp + 1 hours;
+        bytes memory byOwnerKey = _sign(ownerPub, vault.digest(QVault.Op.Freeze, 0, dl, ""));
+        vm.expectRevert(QVault.BadSignature.selector);
+        vault.guardianFreeze(dl, byOwnerKey);
+        vm.prank(guardian); // the guardian's address alone grants nothing
+        vm.expectRevert(QVault.BadSignature.selector);
+        vault.guardianFreeze(dl, new bytes(4627));
+        assertFalse(vault.frozen());
+        assertEq(vault.guardianNonce(), 0);
+    }
 }
